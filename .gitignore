@@ -10,3 +10,14 @@
 *.lai
 *.la
 *.a
+
+# vi
+*~
+*.swp
+*.swo
+*.dSYM
+a.out
+tags
+
+doc
+acsmx
