@@ -21,7 +21,7 @@ static int init_config()
     return ret;
 }
 
-static int init_acsm(ACSM_STRUCT *acsm)
+static int init_acsm(ACSM_STRUCT **acsm)
 {
     int ret = 0;
 
@@ -29,7 +29,7 @@ static int init_acsm(ACSM_STRUCT *acsm)
     char  line[READ_LINE_BUF_LEN] = {0};
     char *p  = NULL;
 
-    acsm = acsmNew();
+    *acsm = acsmNew();
     fp   = fopen(gconfig.keyword_file, "r");
     if (fp == NULL)
     {
@@ -53,7 +53,7 @@ static int init_acsm(ACSM_STRUCT *acsm)
 #if (_DEBUG)
         logprintf("line: [%s]", line);
 #endif
-        acsmAddPattern(acsm, line, strlen(line), gconfig.no_case);
+        acsmAddPattern(*acsm, line, strlen(line), gconfig.no_case);
     }
 
     return ret;
@@ -63,8 +63,17 @@ static int  filter_process(const char *data, char *buf, const size_t buf_len)
 {
     int ret = 0;
 
-    snprintf(buf, buf_len, "<html><body><div>word: %s</div><div>filter result: %s</div></body></html>",
-        data ? data : "No input.", "just test.");
+    assert(NULL != buf);
+    assert(buf_len > 1014);
+
+    if (data)
+    {
+        //
+    }
+
+    snprintf(buf, buf_len, "<html><head><title>ac server demo</title></head>\
+</head><body><div>word: %s</div><div>filter result: %s</div></body></html>",
+        data ? data : "No input.", buf[0] ? buf : "just test.");
 
     return ret;
 }
@@ -151,9 +160,9 @@ int main (int argc, char **argv)
 
     init_config();
 
-    init_acsm(acsm);
+    init_acsm(&acsm);
     /* Generate GtoTo Table and Fail Table */
-    //acsmCompile (acsm);
+    acsmCompile(acsm);
 
     /*Search Pattern*/
     /**
