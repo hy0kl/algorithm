@@ -469,8 +469,8 @@ int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) 
 		/* State is a accept state? */
 		if( StateTable[state].MatchList != NULL )
 		{
-			for( mlist=StateTable[state].MatchList; mlist!=NULL;
-				mlist=mlist->next )
+			for( mlist = StateTable[state].MatchList; mlist != NULL;
+				mlist = mlist->next )
 			{
 				/*Get the index  of the Match Pattern String in  the Text*/
 				index = T - mlist->n + 1 - Tc;

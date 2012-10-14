@@ -70,7 +70,8 @@ static int  filter_process(const char *data, char *buf, const size_t buf_len)
 
     if (data)
     {
-        acsmSearch(g_vars.acsm, data, strlen(data), NULL);
+        ret = acsmSearch(g_vars.acsm, (unsigned char *)data, strlen(data), NULL);
+        logprintf("acsmSearch() = %d", ret);
         mlist = g_vars.acsm->acsmPatterns;
         for (; NULL != mlist; mlist = mlist->next)
         {
