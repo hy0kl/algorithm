@@ -90,6 +90,4 @@ void acsmFree ( ACSM_STRUCT * acsm );
 void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int index) ;
 void PrintSummary (ACSM_PATTERN * pattern) ;
 
-extern int nline;
-
 #endif

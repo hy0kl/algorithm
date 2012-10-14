@@ -30,6 +30,9 @@
 #include <arpa/inet.h>
 #include <openssl/md5.h>
 
+#include <event.h>
+#include <evhttp.h>
+
 /**
 #include <lua.h>
 #include <lualib.h>
@@ -42,6 +45,7 @@
 #define POST_DATA_BUF_LEN   2048
 #define FILE_PATH_LEN       256
 #define READ_LINE_BUF_LEN   1024
+#define HOST_NAME_LEN       32
 
 #define logprintf(format, arg...) fprintf(stderr, "[NOTICE]%s:%d:%s "format"\n", __FILE__, __LINE__, __func__, ##arg)
 
@@ -54,6 +58,9 @@ typedef struct _config_t
 {
     int  log_level;
     int  no_case;
+    int  port;
+    int  timeout;
+    char hostname[HOST_NAME_LEN];
     char keyword_file[FILE_PATH_LEN];
 }  config_t;
 

@@ -8,7 +8,7 @@ Email: wangyao@cs.hit.edu.cn
 *  Text Data Buffer
 */ 
 unsigned char text[MAXLEN];
-extern int nline;
+int nline;
 
 int main (int argc, char **argv) 
 {
