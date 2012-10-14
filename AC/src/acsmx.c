@@ -7,7 +7,7 @@
 ** Copyright (C) 2002 Sourcefire,Inc.
 ** Marc Norton
 **
-**  
+**
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation; either version 2 of the License, or
@@ -25,36 +25,36 @@
 **
 **   Reference - Efficient String matching: An Aid to Bibliographic Search
 **               Alfred V Aho and Margaret J Corasick
-**               Bell Labratories 
+**               Bell Labratories
 **               Copyright(C) 1975 Association for Computing Machinery,Inc
 **
 **   Implemented from the 4 algorithms in the paper by Aho & Corasick
 **   and some implementation ideas from 'Practical Algorithms in C'
 **
 **   Notes:
-**     1) This version uses about 1024 bytes per pattern character - heavy  on the memory. 
-**     2) This algorithm finds all occurrences of all patterns within a  
+**     1) This version uses about 1024 bytes per pattern character - heavy  on the memory.
+**     2) This algorithm finds all occurrences of all patterns within a
 **        body of text.
-**     3) Support is included to handle upper and lower case matching.     
+**     3) Support is included to handle upper and lower case matching.
 **     4) Some comopilers optimize the search routine well, others don't, this makes all the difference.
 **     5) Aho inspects all bytes of the search text, but only once so it's very efficient,
 **        if the patterns are all large than the Modified Wu-Manbar method is often faster.
 **     6) I don't subscribe to any one method is best for all searching needs,
 **        the data decides which method is best,
 **        and we don't know until after the search method has been tested on the specific data sets.
-**        
 **
-**  May 2002  : Marc Norton 1st Version  
+**
+**  May 2002  : Marc Norton 1st Version
 **  June 2002 : Modified interface for SNORT, added case support
 **  Aug 2002  : Cleaned up comments, and removed dead code.
 **  Nov 2,2002: Fixed queue_init() , added count=0
-**              
+**
 **  Wangyao : wangyao@cs.hit.edu.cn
 **
 **  Apr 24,2007: WangYao Combined Build_NFA() and Convert_NFA_To_DFA() into Build_DFA();
-**				 And Delete Some redundancy Code 
-**	
-*/  
+**				 And Delete Some redundancy Code
+**
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,8 +70,8 @@ int nline = 1;
 
 /*
 * Malloc the AC Memory
-*/ 
-static void *AC_MALLOC (int n) 
+*/
+static void *AC_MALLOC (int n)
 {
 	void *p;
 	p = malloc (n);
@@ -81,8 +81,8 @@ static void *AC_MALLOC (int n)
 
 /*
 *Free the AC Memory
-*/ 
-static void AC_FREE (void *p) 
+*/
+static void AC_FREE (void *p)
 {
 	if (p)
 		free (p);
@@ -91,7 +91,7 @@ static void AC_FREE (void *p)
 
 /*
 *    Simple QUEUE NODE
-*/ 
+*/
 typedef struct _qnode
 {
 	int state;
@@ -100,7 +100,7 @@ typedef struct _qnode
 
 /*
 *    Simple QUEUE Structure
-*/ 
+*/
 typedef struct _queue
 {
 	QNODE * head, *tail;
@@ -109,8 +109,8 @@ typedef struct _queue
 
 /*
 *Init the Queue
-*/ 
-static void queue_init (QUEUE * s) 
+*/
+static void queue_init (QUEUE * s)
 {
 	s->head = s->tail = 0;
 	s->count = 0;
@@ -119,8 +119,8 @@ static void queue_init (QUEUE * s)
 
 /*
 *  Add Tail Item to queue
-*/ 
-static void queue_add (QUEUE * s, int state) 
+*/
+static void queue_add (QUEUE * s, int state)
 {
 	QNODE * q;
 	/*Queue is empty*/
@@ -149,8 +149,8 @@ static void queue_add (QUEUE * s, int state)
 
 /*
 *  Remove Head Item from queue
-*/ 
-static int queue_remove (QUEUE * s) 
+*/
+static int queue_remove (QUEUE * s)
 {
 	int state = 0;
 	QNODE * q;
@@ -177,8 +177,8 @@ static int queue_remove (QUEUE * s)
 
 /*
 *Return The count of the Node in the Queue
-*/ 
-static int queue_count (QUEUE * s) 
+*/
+static int queue_count (QUEUE * s)
 {
 	return s->count;
 }
@@ -186,8 +186,8 @@ static int queue_count (QUEUE * s)
 
 /*
 *Free the Queue Memory
-*/ 
-static void queue_free (QUEUE * s) 
+*/
+static void queue_free (QUEUE * s)
 {
 	while (queue_count (s))
 	{
@@ -197,15 +197,15 @@ static void queue_free (QUEUE * s)
 
 
 /*
-** Case Translation Table 
-*/ 
+** Case Translation Table
+*/
 static unsigned char xlatcase[256];
 
 /*
 * Init the xlatcase Table,Trans alpha to UpperMode
 * Just for the NoCase State
-*/ 
-static void init_xlatcase () 
+*/
+static void init_xlatcase ()
 {
 	int i;
 	for (i = 0; i < 256; i++)
@@ -216,8 +216,8 @@ static void init_xlatcase ()
 
 /*
 *Convert the pattern string into upper
-*/ 
-static void ConvertCaseEx (unsigned char *d, unsigned char *s, int m) 
+*/
+static void ConvertCaseEx (unsigned char *d, unsigned char *s, int m)
 {
 	int i;
 	for (i = 0; i < m; i++)
@@ -229,8 +229,8 @@ static void ConvertCaseEx (unsigned char *d, unsigned char *s, int m)
 /*
 *  Add a pattern to the list of patterns terminated at this state.
 *  Insert at front of list.
-*/ 
-static void AddMatchListEntry (ACSM_STRUCT * acsm, int state, ACSM_PATTERN * px) 
+*/
+static void AddMatchListEntry (ACSM_STRUCT * acsm, int state, ACSM_PATTERN * px)
 {
 	ACSM_PATTERN * p;
 	p = (ACSM_PATTERN *) AC_MALLOC (sizeof (ACSM_PATTERN));
@@ -242,19 +242,19 @@ static void AddMatchListEntry (ACSM_STRUCT * acsm, int state, ACSM_PATTERN * px)
 	acsm->acsmStateTable[state].MatchList = p;
 }
 
-/* 
+/*
 * Add Pattern States
-*/ 
-static void AddPatternStates (ACSM_STRUCT * acsm, ACSM_PATTERN * p) 
+*/
+static void AddPatternStates (ACSM_STRUCT * acsm, ACSM_PATTERN * p)
 {
 	unsigned char *pattern;
 	int state=0, next, n;
 	n = p->n; /*The number of alpha in the pattern string*/
 	pattern = p->patrn;
 
-	/* 
+	/*
 	*  Match up pattern with existing states
-	*/ 
+	*/
 	for (; n > 0; pattern++, n--)
 	{
 		next = acsm->acsmStateTable[state].NextState[*pattern];
@@ -265,7 +265,7 @@ static void AddPatternStates (ACSM_STRUCT * acsm, ACSM_PATTERN * p)
 
 	/*
 	*   Add new states for the rest of the pattern bytes, 1 state per byte
-	*/ 
+	*/
 	for (; n > 0; pattern++, n--)
 	{
 		acsm->acsmNumStates++;
@@ -279,8 +279,8 @@ static void AddPatternStates (ACSM_STRUCT * acsm, ACSM_PATTERN * p)
 
 /*
 *   Build Non-Deterministic Finite Automata
-*/ 
-static void Build_DFA (ACSM_STRUCT * acsm) 
+*/
+static void Build_DFA (ACSM_STRUCT * acsm)
 {
 	int r, s;
 	int i;
@@ -288,7 +288,7 @@ static void Build_DFA (ACSM_STRUCT * acsm)
 	ACSM_PATTERN * mlist=0;
 	ACSM_PATTERN * px=0;
 
-	/* Init a Queue */ 
+	/* Init a Queue */
 	queue_init (queue);
 
 	/* Add the state 0 transitions 1st */
@@ -303,12 +303,12 @@ static void Build_DFA (ACSM_STRUCT * acsm)
 		}
 	}
 
-	/* Build the fail state transitions for each valid state */ 
+	/* Build the fail state transitions for each valid state */
 	while (queue_count (queue) > 0)
 	{
 		r = queue_remove (queue);
 
-		/* Find Final States for any Failure */ 
+		/* Find Final States for any Failure */
 		for (i = 0; i < ALPHABET_SIZE; i++)
 		{
 			int fs, next;
@@ -318,9 +318,9 @@ static void Build_DFA (ACSM_STRUCT * acsm)
 				queue_add (queue, s);
 				fs = acsm->acsmStateTable[r].FailState;
 
-				/* 
-				*  Locate the next valid state for 'i' starting at s 
-				*/ 
+				/*
+				*  Locate the next valid state for 'i' starting at s
+				*/
 				/**** Note the  variable "next" ****/
 				/*** Note "NextState[i]" is a const variable in this block ***/
 				while ((next=acsm->acsmStateTable[fs].NextState[i]) ==
@@ -331,7 +331,7 @@ static void Build_DFA (ACSM_STRUCT * acsm)
 
 				/*
 				*  Update 's' state failure state to point to the next valid state
-				*/ 
+				*/
 				acsm->acsmStateTable[s].FailState = next;
 			}
 			else
@@ -342,15 +342,15 @@ static void Build_DFA (ACSM_STRUCT * acsm)
 		}
 	}
 
-	/* Clean up the queue */ 
+	/* Clean up the queue */
 	queue_free (queue);
 }
 
 
 /*
 * Init the acsm DataStruct
-*/ 
-ACSM_STRUCT * acsmNew () 
+*/
+ACSM_STRUCT * acsmNew ()
 {
 	ACSM_STRUCT * p;
 	init_xlatcase ();
@@ -364,8 +364,8 @@ ACSM_STRUCT * acsmNew ()
 
 /*
 *   Add a pattern to the list of patterns for this state machine
-*/ 
-int acsmAddPattern (ACSM_STRUCT * p, unsigned char *pat, int n, int nocase) 
+*/
+int acsmAddPattern (ACSM_STRUCT * p, unsigned char *pat, int n, int nocase)
 {
 	ACSM_PATTERN * plist;
 	plist = (ACSM_PATTERN *) AC_MALLOC (sizeof (ACSM_PATTERN));
@@ -389,13 +389,13 @@ int acsmAddPattern (ACSM_STRUCT * p, unsigned char *pat, int n, int nocase)
 
 /*
 *   Compile State Machine
-*/ 
-int acsmCompile (ACSM_STRUCT * acsm) 
+*/
+int acsmCompile (ACSM_STRUCT * acsm)
 {
 	int i, k;
 	ACSM_PATTERN * plist;
 
-	/* Count number of states */ 
+	/* Count number of states */
 	acsm->acsmMaxStates = 1; /*State 0*/
 	for (plist = acsm->acsmPatterns; plist != NULL; plist = plist->next)
 	{
@@ -406,10 +406,10 @@ int acsmCompile (ACSM_STRUCT * acsm)
 	MEMASSERT (acsm->acsmStateTable, "acsmCompile");
 	memset (acsm->acsmStateTable, 0,sizeof (ACSM_STATETABLE) * acsm->acsmMaxStates);
 
-	/* Initialize state zero as a branch */ 
+	/* Initialize state zero as a branch */
 	acsm->acsmNumStates = 0;
 
-	/* Initialize all States NextStates to FAILED */ 
+	/* Initialize all States NextStates to FAILED */
 	for (k = 0; k < acsm->acsmMaxStates; k++)
 	{
 		for (i = 0; i < ALPHABET_SIZE; i++)
@@ -419,13 +419,13 @@ int acsmCompile (ACSM_STRUCT * acsm)
 	}
 
 	/* This is very import */
-	/* Add each Pattern to the State Table */ 
+	/* Add each Pattern to the State Table */
 	for (plist = acsm->acsmPatterns; plist != NULL; plist = plist->next)
 	{
 		AddPatternStates (acsm, plist);
 	}
 
-	/* Set all failed state transitions which from state 0 to return to the 0'th state */ 
+	/* Set all failed state transitions which from state 0 to return to the 0'th state */
 	for (i = 0; i < ALPHABET_SIZE; i++)
 	{
 		if (acsm->acsmStateTable[0].NextState[i] == ACSM_FAIL_STATE)
@@ -434,7 +434,7 @@ int acsmCompile (ACSM_STRUCT * acsm)
 		}
 	}
 
-	/* Build the NFA  */ 
+	/* Build the NFA  */
 	Build_DFA (acsm);
 
 	return 0;
@@ -446,8 +446,8 @@ static unsigned char Tc[64*1024];
 
 /*
 *   Search Text or Binary Data for Pattern matches
-*/ 
-int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int index)) 
+*/
+int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int index))
 {
 	int state;
 	ACSM_PATTERN * mlist;
@@ -457,7 +457,7 @@ int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) 
 	unsigned char *T;
 	int index;
 
-	/* Case conversion */ 
+	/* Case conversion */
 	ConvertCaseEx (Tc, Tx, n);
 	T = Tc;
 	Tend = T + n;
@@ -491,8 +491,8 @@ int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) 
 
 /*
 *   Free all memory
-*/ 
-void acsmFree (ACSM_STRUCT * acsm) 
+*/
+void acsmFree (ACSM_STRUCT * acsm)
 {
 	int i;
 	ACSM_PATTERN * mlist, *ilist;
@@ -514,10 +514,10 @@ void acsmFree (ACSM_STRUCT * acsm)
 	AC_FREE (acsm->acsmStateTable);
 }
 
-/* 
+/*
 *   Print A Match String's Information
-*/ 
-void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int index) 
+*/
+void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int index)
 {
 	/* Count the Each Match Pattern */
 	ACSM_PATTERN *temp = pattern;
@@ -527,9 +527,9 @@ void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int inde
 		{
 			temp->nmatch++;
 		}
-		
+
 	}
-	
+
 	if(mlist->nocase)
 		fprintf (stdout, "Match KeyWord %s at %d line %d char\n", mlist->patrn,nline,index);
 	else
@@ -541,7 +541,7 @@ void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int inde
 * Print Summary Information of the AC Match
 */
 void PrintSummary (ACSM_PATTERN * pattern)
-{	
+{
 	ACSM_PATTERN * mlist = pattern;
 	printf("\n### Summary ###\n");
 	for (;mlist!=NULL;mlist=mlist->next)

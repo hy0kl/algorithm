@@ -54,7 +54,6 @@ static int init_acsm(ACSM_STRUCT **acsm)
         logprintf("line: [%s]", line);
 #endif
         acsmAddPattern(*acsm, line, strlen(line), gconfig.no_case);
-        nline++;
     }
 
     return ret;
@@ -62,18 +61,28 @@ static int init_acsm(ACSM_STRUCT **acsm)
 
 static int  filter_process(const char *data, char *buf, const size_t buf_len)
 {
-    int ret = 0;
+    int   ret = 0;
+    char *p   = NULL;
+    ACSM_PATTERN * mlist = NULL;
 
     assert(NULL != buf);
     assert(buf_len > 1014);
 
     if (data)
     {
-#if (_DEBUG)
-        acsmSearch(g_vars.acsm, data, strlen(data), PrintMatch);
-#else
         acsmSearch(g_vars.acsm, data, strlen(data), NULL);
-#endif
+        mlist = g_vars.acsm->acsmPatterns;
+        for (; NULL != mlist; mlist = mlist->next)
+        {
+            if (mlist->nocase)
+            {
+                printf("%12s : %5d\n", mlist->patrn, mlist->nmatch);
+            }
+            else
+            {
+                printf("%12s : %5d\n", mlist->casepatrn, mlist->nmatch);
+            }
+        }
     }
 
     snprintf(buf, buf_len, "<html><head><title>ac server demo</title></head>\
@@ -169,18 +178,6 @@ int main (int argc, char **argv)
     /* Generate GtoTo Table and Fail Table */
     acsmCompile(acsm);
     g_vars.acsm = acsm;
-
-    /*Search Pattern*/
-    /**
-    while ( fgets(text,MAXLEN,fd) )
-    {
-        acsmSearch (acsm, text, strlen (text), PrintMatch);
-        nline++;
-    }
-
-    PrintSummary(acsm->acsmPatterns);
-
-    */
 
     /** 初始化事件 */
     event_init();
