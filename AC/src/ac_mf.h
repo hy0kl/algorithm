@@ -51,6 +51,7 @@
 
 typedef struct _global_variable_t
 {
+    ACSM_STRUCT *acsm;
     char post_data[POST_DATA_BUF_LEN];
 } global_variable_t;
 

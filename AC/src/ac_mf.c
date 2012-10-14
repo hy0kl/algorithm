@@ -54,6 +54,7 @@ static int init_acsm(ACSM_STRUCT **acsm)
         logprintf("line: [%s]", line);
 #endif
         acsmAddPattern(*acsm, line, strlen(line), gconfig.no_case);
+        nline++;
     }
 
     return ret;
@@ -68,7 +69,11 @@ static int  filter_process(const char *data, char *buf, const size_t buf_len)
 
     if (data)
     {
-        //
+#if (_DEBUG)
+        acsmSearch(g_vars.acsm, data, strlen(data), PrintMatch);
+#else
+        acsmSearch(g_vars.acsm, data, strlen(data), NULL);
+#endif
     }
 
     snprintf(buf, buf_len, "<html><head><title>ac server demo</title></head>\
@@ -163,6 +168,7 @@ int main (int argc, char **argv)
     init_acsm(&acsm);
     /* Generate GtoTo Table and Fail Table */
     acsmCompile(acsm);
+    g_vars.acsm = acsm;
 
     /*Search Pattern*/
     /**

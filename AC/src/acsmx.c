@@ -477,7 +477,10 @@ int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) 
 
 				//mlist->nmatch++;
 				nfound++;
-				PrintMatch (acsm->acsmPatterns,mlist, nline,index);
+                if (PrintMatch)
+                {
+				    PrintMatch (acsm->acsmPatterns,mlist, nline,index);
+                }
 			}
 		}
 	}
