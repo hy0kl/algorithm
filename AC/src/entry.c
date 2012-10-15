@@ -23,11 +23,11 @@ int main (int argc, char **argv)
 		exit (0);
 	}
 
-	acsm = acsmNew ();
+	acsm = acsmNew();
 
-	strcpy (filename, argv[1]);
-	fd = fopen(filename,"r");
-	if(fd == NULL)
+	strncpy(filename, argv[1], sizeof(filename));
+	fd = fopen(filename, "r");
+	if (fd == NULL)
 	{
 		fprintf(stderr,"Open file error!\n");
 		exit(1);
@@ -40,24 +40,25 @@ int main (int argc, char **argv)
 	{
 		if (argv[i][0] == '-')
 			continue;
-		acsmAddPattern (acsm, (unsigned char *)argv[i], strlen (argv[i]), nocase);
+		
+        acsmAddPattern(acsm, (unsigned char *)argv[i], strlen (argv[i]), nocase);
 	}
 
 	/* Generate GtoTo Table and Fail Table */
-	acsmCompile (acsm);
+	acsmCompile(acsm);
 
 	/*Search Pattern*/
-	while ( fgets((char *)text, MAXLEN, fd) )
+	while (fgets((char *)text, MAXLEN, fd))
 	{
-		acsmSearch (acsm, (unsigned char *)text, strlen((const char *)text), PrintMatch);
+		acsmSearch(acsm, (unsigned char *)text, strlen((const char *)text), PrintMatch);
 		nline++;
 	}
 
 	PrintSummary(acsm->acsmPatterns);
 
-	acsmFree (acsm);
+	acsmFree(acsm);
 
-	printf ("\n### AC Match Finished ###\n");
+	printf("\n### AC Match Finished ###\n");
 //	system("pause");
 
 	return (0);
