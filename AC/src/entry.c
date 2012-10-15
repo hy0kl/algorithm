@@ -40,16 +40,16 @@ int main (int argc, char **argv)
 	{
 		if (argv[i][0] == '-')
 			continue;
-		acsmAddPattern (acsm, argv[i], strlen (argv[i]), nocase);
+		acsmAddPattern (acsm, (unsigned char *)argv[i], strlen (argv[i]), nocase);
 	}
 
 	/* Generate GtoTo Table and Fail Table */
 	acsmCompile (acsm);
 
 	/*Search Pattern*/
-	while ( fgets(text,MAXLEN,fd) )
+	while ( fgets((char *)text, MAXLEN, fd) )
 	{
-		acsmSearch (acsm, text, strlen (text), PrintMatch);
+		acsmSearch (acsm, (unsigned char *)text, strlen((const char *)text), PrintMatch);
 		nline++;
 	}
 

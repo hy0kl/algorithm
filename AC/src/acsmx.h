@@ -82,7 +82,7 @@ typedef struct {
 *   Prototypes
 */
 ACSM_STRUCT * acsmNew ();
-int acsmAddPattern( ACSM_STRUCT * p, unsigned char * pat, int n,int nocase);
+int acsmAddPattern( ACSM_STRUCT * p, unsigned char *pat, int n, int nocase);
 int acsmCompile ( ACSM_STRUCT * acsm );
 //int acsmSearch ( ACSM_STRUCT * acsm,unsigned char * T, int n, int (*Match) (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int index));
 int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int index));

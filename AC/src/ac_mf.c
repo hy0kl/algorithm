@@ -53,7 +53,7 @@ static int init_acsm(ACSM_STRUCT **acsm)
 #if (_DEBUG)
         logprintf("line: [%s]", line);
 #endif
-        acsmAddPattern(*acsm, line, strlen(line), gconfig.no_case);
+        acsmAddPattern(*acsm, (unsigned char *)line, strlen(line), gconfig.no_case);
     }
 
     return ret;

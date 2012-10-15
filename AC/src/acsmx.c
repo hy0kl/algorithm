@@ -523,7 +523,7 @@ void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int inde
 	ACSM_PATTERN *temp = pattern;
 	for (;temp!=NULL;temp=temp->next)
 	{
-		if (!strcmp(temp->patrn,mlist->patrn)) //strcmp succeed return 0,So here use "!" operation
+		if (!strcmp((const char *)temp->patrn, (const char *)mlist->patrn)) //strcmp succeed return 0,So here use "!" operation
 		{
 			temp->nmatch++;
 		}
