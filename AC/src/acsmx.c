@@ -351,14 +351,16 @@ static void Build_DFA (ACSM_STRUCT * acsm)
 /*
 * Init the acsm DataStruct
 */
-ACSM_STRUCT * acsmNew ()
+ACSM_STRUCT *acsmNew()
 {
-    ACSM_STRUCT * p = NULL;
-    init_xlatcase ();
-    p = (ACSM_STRUCT *) AC_MALLOC (sizeof (ACSM_STRUCT));
+    ACSM_STRUCT *p = NULL;
+
+    init_xlatcase();
+    p = (ACSM_STRUCT *) AC_MALLOC(sizeof(ACSM_STRUCT));
     MEMASSERT (p, "acsmNew");
     if (p)
         memset (p, 0, sizeof (ACSM_STRUCT));
+
     return p;
 }
 
@@ -369,6 +371,7 @@ ACSM_STRUCT * acsmNew ()
 int acsmAddPattern (ACSM_STRUCT * p, unsigned char *pat, int n, int nocase)
 {
     ACSM_PATTERN * plist = NULL;
+    fprintf(stderr, "pattern: [%s]\n", pat);
 
     plist = (ACSM_PATTERN *)AC_MALLOC(sizeof(ACSM_PATTERN));
     MEMASSERT (plist, "acsmAddPattern");
@@ -456,7 +459,8 @@ static unsigned char Tc[64*1024];
 /*
 *   Search Text or Binary Data for Pattern matches
 */
-int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int index))
+int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,
+        void (*PrintMatch)(ACSM_PATTERN * pattern, ACSM_PATTERN * mlist, int nline, int index))
 {
     int state;
     ACSM_PATTERN * mlist = NULL;
@@ -465,6 +469,8 @@ int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) 
     int nfound = 0; /*Number of the found(matched) patten string*/
     unsigned char *T = NULL;
     int index;
+
+    //fprintf(stderr, "******search keyword str: [%s]\n", Tx);
 
     /* Case conversion */
     ConvertCaseEx(Tc, Tx, n);
@@ -478,13 +484,13 @@ int acsmSearch (ACSM_STRUCT * acsm, unsigned char *Tx, int n,void (*PrintMatch) 
         /* State is a accept state? */
         if( StateTable[state].MatchList != NULL )
         {
-            for( mlist = StateTable[state].MatchList; mlist != NULL;
-                mlist = mlist->next )
+            for (mlist = StateTable[state].MatchList;
+                 mlist != NULL;
+                 mlist = mlist->next)
             {
                 /*Get the index  of the Match Pattern String in  the Text*/
                 index = T - mlist->n + 1 - Tc;
 
-                //mlist->nmatch++;
                 nfound++;
                 if (PrintMatch)
                 {
@@ -530,7 +536,7 @@ void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int inde
 {
     /* Count the Each Match Pattern */
     ACSM_PATTERN *temp = pattern;
-    for (;temp!=NULL;temp=temp->next)
+    for (; temp != NULL; temp=temp->next)
     {
         if (!strcmp((const char *)temp->patrn, (const char *)mlist->patrn)) //strcmp succeed return 0,So here use "!" operation
         {
@@ -540,24 +546,24 @@ void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int inde
     }
 
     if(mlist->nocase)
-        fprintf (stdout, "Match KeyWord %s at %d line %d char\n", mlist->patrn,nline,index);
+        fprintf (stdout, "Match KeyWord %s at %d line %d char\n", mlist->patrn, nline, index);
     else
-        fprintf (stdout, "Match KeyWord %s at %d line %d char\n", mlist->casepatrn,nline,index);
+        fprintf (stdout, "Match KeyWord %s at %d line %d char\n", mlist->casepatrn, nline, index);
 
 }
 
 /*
 * Print Summary Information of the AC Match
 */
-void PrintSummary (ACSM_PATTERN *pattern)
+void PrintSummary(ACSM_PATTERN *pattern)
 {
     ACSM_PATTERN *mlist = pattern;
     printf("\n### Summary ###\n");
     for (; mlist != NULL; mlist = mlist->next)
     {
         if (mlist->nocase)
-            printf("%12s : %5d\n",mlist->patrn,mlist->nmatch);
+            printf("%12s : %5d\n", mlist->patrn,mlist->nmatch);
         else
-            printf("%12s : %5d\n",mlist->casepatrn,mlist->nmatch);
+            printf("%12s : %5d\n", mlist->casepatrn,mlist->nmatch);
     }
 }

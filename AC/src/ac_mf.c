@@ -59,6 +59,17 @@ static int init_acsm(ACSM_STRUCT **acsm)
     return ret;
 }
 
+static void clear_match_count()
+{
+    ACSM_PATTERN *mlist = NULL;
+
+    mlist = g_vars.acsm->acsmPatterns;
+    for (; NULL != mlist; mlist = mlist->next)
+    {
+        mlist->nmatch = 0;
+    }
+}
+
 static int  filter_process(const char *data, char *buf, const size_t buf_len)
 {
     int   ret = 0;
@@ -68,27 +79,39 @@ static int  filter_process(const char *data, char *buf, const size_t buf_len)
     assert(NULL != buf);
     assert(buf_len > 1014);
 
+    p = buf;
+    p += snprintf(p, buf_len - (p - buf), "<html><head><title>ac server demo</title></head>\
+</head><body><div>word: %s</div><div>***filter result***</div><div>",
+        data ? data : "No input.");
+
     if (data)
     {
-        ret = acsmSearch(g_vars.acsm, (unsigned char *)data, strlen(data), NULL);
+        clear_match_count();
+        ret = acsmSearch(g_vars.acsm, (unsigned char *)data, strlen(data), PrintMatch);
         logprintf("acsmSearch() = %d", ret);
         mlist = g_vars.acsm->acsmPatterns;
         for (; NULL != mlist; mlist = mlist->next)
         {
+            if (! mlist->nmatch)
+            {
+                continue;
+            }
+
+
             if (mlist->nocase)
             {
-                printf("%12s : %5d\n", mlist->patrn, mlist->nmatch);
+                p += snprintf(p, buf_len - (p - buf), "<div>filter-key: %s, hit count: %d</div>",
+                        mlist->patrn, mlist->nmatch);
             }
             else
             {
-                printf("%12s : %5d\n", mlist->casepatrn, mlist->nmatch);
+                p += snprintf(p, buf_len - (p - buf), "<div>filter-key: %s, hit count: %d</div>",
+                        mlist->casepatrn, mlist->nmatch);
             }
         }
     }
 
-    snprintf(buf, buf_len, "<html><head><title>ac server demo</title></head>\
-</head><body><div>word: %s</div><div>filter result: %s</div></body></html>",
-        data ? data : "No input.", buf[0] ? buf : "just test.");
+    p += snprintf(p, buf_len - (p - buf), "</div></body></html>");
 
     return ret;
 }
