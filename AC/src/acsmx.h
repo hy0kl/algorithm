@@ -18,12 +18,12 @@
 
 
 /*
-**   ACSMX.H 
+**   ACSMX.H
 **
 **
 */
-#ifndef ACSMX_H
-#define ACSMX_H
+#ifndef _ACSMX_H
+#define _ACSMX_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,12 +32,12 @@
 /*
 *   Prototypes
 */
-#define ALPHABET_SIZE    256     
-#define MAXLEN 256
+#define ALPHABET_SIZE   256
+#define MAXLEN          256
 
-#define ACSM_FAIL_STATE   -1     
+#define ACSM_FAIL_STATE   -1
 
-typedef struct _acsm_pattern {      
+typedef struct _acsm_pattern {
 
 	struct  _acsm_pattern *next;
 	unsigned char         *patrn;
@@ -50,18 +50,18 @@ typedef struct _acsm_pattern {
 } ACSM_PATTERN;
 
 
-typedef struct  {    
+typedef struct  {
 
 	/* Next state - based on input character */
-	int      NextState[ ALPHABET_SIZE ];  
+	int      NextState[ ALPHABET_SIZE ];
 
 	/* Failure state - used while building NFA & DFA  */
-	int      FailState;   
+	int      FailState;
 
 	/* List of patterns that end here, if any */
-	ACSM_PATTERN *MatchList;   
+	ACSM_PATTERN *MatchList;
 
-}ACSM_STATETABLE; 
+}ACSM_STATETABLE;
 
 
 /*
@@ -69,8 +69,8 @@ typedef struct  {
 */
 typedef struct {
 
-	int acsmMaxStates;  
-	int acsmNumStates;  
+	int acsmMaxStates;
+	int acsmNumStates;
 
 	ACSM_PATTERN    * acsmPatterns;
 	ACSM_STATETABLE * acsmStateTable;

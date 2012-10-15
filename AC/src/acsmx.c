@@ -110,7 +110,7 @@ typedef struct _queue
 /*
 *Init the Queue
 */
-static void queue_init (QUEUE * s)
+static void queue_init(QUEUE * s)
 {
     s->head = s->tail = 0;
     s->count = 0;
@@ -120,17 +120,17 @@ static void queue_init (QUEUE * s)
 /*
 *  Add Tail Item to queue
 */
-static void queue_add (QUEUE * s, int state)
+static void queue_add(QUEUE *s, int state)
 {
-    QNODE * q;
+    QNODE *q = NULL;
     /*Queue is empty*/
     if (!s->head)
     {
-        q = s->tail = s->head = (QNODE *) AC_MALLOC (sizeof (QNODE));
+        q = s->tail = s->head = (QNODE *)AC_MALLOC(sizeof(QNODE));
         /*if malloc failed,exit the problom*/
-        MEMASSERT (q, "queue_add");
+        MEMASSERT(q, "queue_add");
         q->state = state;
-        q->next = 0; /*Set the New Node's Next Null*/
+        q->next  = 0; /*Set the New Node's Next Null*/
     }
     else
     {
@@ -200,18 +200,19 @@ static void queue_free (QUEUE * s)
 ** Case Translation Table
 */
 static unsigned char xlatcase[256];
-
 /*
 * Init the xlatcase Table,Trans alpha to UpperMode
 * Just for the NoCase State
 */
-static void init_xlatcase ()
+static void init_xlatcase(void)
 {
-    int i;
+    int i = 0;
     for (i = 0; i < 256; i++)
     {
-        xlatcase[i] = toupper (i);
+        xlatcase[i] = toupper(i);
     }
+
+    return;
 }
 
 /*
@@ -230,11 +231,12 @@ static void ConvertCaseEx (unsigned char *d, unsigned char *s, int m)
 *  Add a pattern to the list of patterns terminated at this state.
 *  Insert at front of list.
 */
-static void AddMatchListEntry (ACSM_STRUCT * acsm, int state, ACSM_PATTERN * px)
+static void AddMatchListEntry(ACSM_STRUCT *acsm, int state, ACSM_PATTERN * px)
 {
     ACSM_PATTERN *p = NULL;
+
     p = (ACSM_PATTERN *)AC_MALLOC(sizeof(ACSM_PATTERN));
-    MEMASSERT (p, "AddMatchListEntry");
+    MEMASSERT(p, "AddMatchListEntry");
     memcpy(p, px, sizeof(ACSM_PATTERN));
 
     /*Add the new pattern to the pattern  list*/
@@ -247,8 +249,9 @@ static void AddMatchListEntry (ACSM_STRUCT * acsm, int state, ACSM_PATTERN * px)
 */
 static void AddPatternStates(ACSM_STRUCT *acsm, ACSM_PATTERN *p)
 {
-    unsigned char *pattern;
+    unsigned char *pattern = NULL;
     int state = 0, next = 0, n = 0;
+
     n = p->n; /*The number of alpha in the pattern string*/
     pattern = p->patrn;
 
@@ -283,8 +286,8 @@ static void AddPatternStates(ACSM_STRUCT *acsm, ACSM_PATTERN *p)
 */
 static void Build_DFA (ACSM_STRUCT * acsm)
 {
-    int r, s;
-    int i;
+    int r = 0, stat = 0;
+    int i = 0;
     QUEUE q, *queue = &q;
     ACSM_PATTERN *mlist = NULL;
     ACSM_PATTERN *px    = NULL;
@@ -293,14 +296,14 @@ static void Build_DFA (ACSM_STRUCT * acsm)
     queue_init(queue);
 
     /* Add the state 0 transitions 1st */
-    /*1st depth Node's FailState is 0, fail(x)=0 */
+    /*1st depth Node's FailState is 0, fail(x) = 0 */
     for (i = 0; i < ALPHABET_SIZE; i++)
     {
-        s = acsm->acsmStateTable[0].NextState[i];
-        if (s)
+        stat = acsm->acsmStateTable[0].NextState[i];
+        if (stat)
         {
-            queue_add(queue, s);
-            acsm->acsmStateTable[s].FailState = 0;
+            queue_add(queue, stat);
+            acsm->acsmStateTable[stat].FailState = 0;
         }
     }
 
@@ -314,9 +317,9 @@ static void Build_DFA (ACSM_STRUCT * acsm)
         {
             int fs, next;
             /*** Note NextState[i] is a const variable in this block ***/
-            if ((s = acsm->acsmStateTable[r].NextState[i]) != ACSM_FAIL_STATE)
+            if ((stat = acsm->acsmStateTable[r].NextState[i]) != ACSM_FAIL_STATE)
             {
-                queue_add(queue, s);
+                queue_add(queue, stat);
                 fs = acsm->acsmStateTable[r].FailState;
 
                 /*
@@ -333,7 +336,7 @@ static void Build_DFA (ACSM_STRUCT * acsm)
                 /*
                 *  Update 's' state failure state to point to the next valid state
                 */
-                acsm->acsmStateTable[s].FailState = next;
+                acsm->acsmStateTable[stat].FailState = next;
             }
             else
             {
@@ -351,15 +354,15 @@ static void Build_DFA (ACSM_STRUCT * acsm)
 /*
 * Init the acsm DataStruct
 */
-ACSM_STRUCT *acsmNew()
+ACSM_STRUCT *acsmNew(void)
 {
     ACSM_STRUCT *p = NULL;
 
     init_xlatcase();
-    p = (ACSM_STRUCT *) AC_MALLOC(sizeof(ACSM_STRUCT));
+    p = (ACSM_STRUCT *)AC_MALLOC(sizeof(ACSM_STRUCT));
     MEMASSERT (p, "acsmNew");
     if (p)
-        memset (p, 0, sizeof (ACSM_STRUCT));
+        memset(p, 0, sizeof(ACSM_STRUCT));
 
     return p;
 }
@@ -368,13 +371,13 @@ ACSM_STRUCT *acsmNew()
 /*
 *   Add a pattern to the list of patterns for this state machine
 */
-int acsmAddPattern (ACSM_STRUCT * p, unsigned char *pat, int n, int nocase)
+int acsmAddPattern(ACSM_STRUCT *p, unsigned char *pat, int n, int nocase)
 {
-    ACSM_PATTERN * plist = NULL;
-    fprintf(stderr, "pattern: [%s]\n", pat);
+    ACSM_PATTERN *plist = NULL;
+    //fprintf(stderr, "pattern: [%s]\n", pat);
 
     plist = (ACSM_PATTERN *)AC_MALLOC(sizeof(ACSM_PATTERN));
-    MEMASSERT (plist, "acsmAddPattern");
+    MEMASSERT(plist, "acsmAddPattern");
 
     plist->patrn = (unsigned char *)AC_MALLOC(n + 1);
     plist->patrn[n] = '\0';
@@ -401,7 +404,8 @@ int acsmAddPattern (ACSM_STRUCT * p, unsigned char *pat, int n, int nocase)
 */
 int acsmCompile(ACSM_STRUCT * acsm)
 {
-    int i = 0, k = 0;
+    int i = 0;
+    int k = 0;
     size_t size = 0;
     ACSM_PATTERN *plist = NULL;
 
