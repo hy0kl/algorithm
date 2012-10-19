@@ -28,7 +28,6 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <arpa/inet.h>
-#include <openssl/md5.h>
 
 #include <event.h>
 #include <evhttp.h>
