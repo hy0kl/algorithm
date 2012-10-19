@@ -175,7 +175,7 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     evhttp_add_header(req->output_headers, "Connection", "keep-alive");
     evhttp_add_header(req->output_headers, "Cache-Control", "no-cache");
     evhttp_add_header(req->output_headers, "Expires", "-1");
-    evhttp_add_header(req->output_headers, "Server", "lhs");    /** libevent http server */
+    evhttp_add_header(req->output_headers, "Server", SERVER_TAG);    /** libevent http server */
 
     //处理输出数据
     evbuffer_add_printf(buf, "%s", tpl_buf);
