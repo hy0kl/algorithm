@@ -6,6 +6,63 @@
 config_t          gconfig;
 global_variable_t g_vars;
 
+int daemonize(int nochdir, int noclose)
+{
+    int fd;
+
+    switch (fork())
+    {
+    case -1:
+        return (-1);
+    case 0:
+        break;
+    default:
+        _exit(EXIT_SUCCESS);
+    }
+
+    if (setsid() == -1)
+        return (-1);
+
+    if (nochdir == 0)
+    {
+        if(chdir("/") != 0)
+        {
+            perror("chdir");
+            return (-1);
+        }
+    }
+
+    if (noclose == 0 && (fd = open("/dev/null", O_RDWR, 0)) != -1)
+    {
+        if (dup2(fd, STDIN_FILENO) < 0)
+        {
+            perror("dup2 stdin");
+            return (-1);
+        }
+        if (dup2(fd, STDOUT_FILENO) < 0)
+        {
+            perror("dup2 stdout");
+            return (-1);
+        }
+        if (dup2(fd, STDERR_FILENO) < 0)
+        {
+            perror("dup2 stderr");
+            return (-1);
+        }
+
+        if (fd > STDERR_FILENO)
+        {
+            if (close(fd) < 0)
+            {
+                perror("close");
+                return (-1);
+            }
+        }
+    }
+
+    return(0);
+}
+
 static int init_config()
 {
     int ret = 0;
@@ -161,8 +218,19 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
 #endif
 #endif
 
-    /* 接收 GET 解析参数 { */
+    /* 接收 GET 解析参数 */
     const char *word   = evhttp_find_header(&http_query, "word");
+
+    /** 接受 PSOT 数据 */
+    const char *post_data = (char *)EVBUFFER_DATA(req->input_buffer);
+    if (post_data)
+    {
+        logprintf("POST: [%s]", post_data);
+    }
+    else
+    {
+        logprintf("NO POST data.");
+    }
 
     // portions handle
     filter_process(word, tpl_buf, POST_DATA_BUF_LEN);
