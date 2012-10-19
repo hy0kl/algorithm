@@ -14,8 +14,10 @@ int daemonize(int nochdir, int noclose)
     {
     case -1:
         return (-1);
+
     case 0:
         break;
+
     default:
         _exit(EXIT_SUCCESS);
     }
@@ -127,7 +129,7 @@ static void clear_match_count()
     }
 }
 
-static int  filter_process(const char *data, char *buf, const size_t buf_len)
+static int filter_process(const char *data, char *buf, const size_t buf_len)
 {
     int   ret = 0;
     char *p   = NULL;
@@ -173,7 +175,7 @@ static int  filter_process(const char *data, char *buf, const size_t buf_len)
     return ret;
 }
 
-static int list_keyword(char *buf, size_t buf_len)
+static int list_keyword(char *buf, const size_t buf_len)
 {
     assert(NULL != buf);
     assert(buf_len > 128);
@@ -208,6 +210,13 @@ STAT_ERR:
     close(fd);
 
 FINISH:
+    return ret;
+}
+
+static int list_memory_pattern(char *buf, const size_t buf_len)
+{
+    int ret = 0;
+
     return ret;
 }
 
@@ -271,6 +280,10 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
         {
             do_action = ACTION_LIST;
         }
+        else if (0 == strncmp(action, "memory", 6))
+        {
+            do_action = ACTION_MEMORY;
+        }
     }
 
     /** 接受 PSOT 数据 */
@@ -303,6 +316,10 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     {
     case ACTION_LIST:
         list_keyword(tpl_buf, sizeof(tpl_buf));
+        break;
+
+    case ACTION_MEMORY:
+        list_memory_pattern(tpl_buf, sizeof(tpl_buf));
         break;
 
     case ACTION_FILTER:
