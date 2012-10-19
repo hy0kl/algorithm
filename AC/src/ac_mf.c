@@ -173,6 +173,44 @@ static int  filter_process(const char *data, char *buf, const size_t buf_len)
     return ret;
 }
 
+static int list_keyword(char *buf, size_t buf_len)
+{
+    assert(NULL != buf);
+    assert(buf_len > 128);
+
+    int ret = 0;
+    int fd = 0;
+    char *p = buf;
+    struct stat stat_buf;
+    size_t size = 0;
+    char read_buf[1024 * 10] = {0};
+
+    fd = open(gconfig.keyword_file, O_RDONLY);
+    if (-1 == fd || 0 == fd)
+    {
+        p += snprintf(p, buf_len - (p - buf), "Can NOT open('%s')\n", gconfig.keyword_file);
+        ret = -1;
+        goto FINISH;
+    }
+
+    if (0 != fstat(fd, &stat_buf))
+    {
+        p += snprintf(p, buf_len - (p - buf), "Can get fstat()\n");
+        ret = -1;
+        goto STAT_ERR;
+    }
+
+    size = stat_buf.st_size;
+    read(fd, read_buf, size > sizeof(read_buf) ? sizeof(read_buf) - 1 : size);
+    p += snprintf(p, buf_len - (p - buf),"<pre>%s</pre>", read_buf);
+
+STAT_ERR:
+    close(fd);
+
+FINISH:
+    return ret;
+}
+
 static void api_proxy_handler(struct evhttp_request *req, void *arg)
 {
     // 初始化返回客户端的数据缓存
@@ -185,6 +223,7 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     evhttp_parse_query(decode_uri, &http_query);
 
     int   output_format = 0;
+    int   do_action = ACTION_FILTER;
     char  tpl_buf[TPL_BUF_LEN]        = {0};
     char  post_buf[POST_DATA_BUF_LEN] = {0};
     char *p = NULL;
@@ -224,12 +263,21 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
 
     /* 接收 GET 解析参数 */
     const char *word   = evhttp_find_header(&http_query, "word");
+    const char *action = evhttp_find_header(&http_query, "action");
+
+    if (NULL != action)
+    {
+        if (0 == strncmp(action, "list", 4))
+        {
+            do_action = ACTION_LIST;
+        }
+    }
 
     /** 接受 PSOT 数据 */
     const char *post_data = (char *)EVBUFFER_DATA(req->input_buffer);
     if (post_data)
     {
-        snprintf(post_buf, POST_DATA_BUF_LEN, "%s", post_data);
+        snprintf(post_buf, sizeof(post_buf), "%s", post_data);
         logprintf("POST: [%s]", post_buf);
         find = post_buf;
         if (NULL != (find = strstr(post_buf, "word=")))
@@ -251,8 +299,18 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     }
 #endif
 
-    // portions handle
-    filter_process(word, tpl_buf, POST_DATA_BUF_LEN);
+    switch (do_action)
+    {
+    case ACTION_LIST:
+        list_keyword(tpl_buf, sizeof(tpl_buf));
+        break;
+
+    case ACTION_FILTER:
+    default:
+        // portions handle
+        filter_process(word, tpl_buf, sizeof(tpl_buf));
+        break;
+    }
 
     //处理输出header头
     evhttp_add_header(req->output_headers, "Content-Type", output_format ?

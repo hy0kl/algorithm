@@ -48,6 +48,9 @@
 #define READ_LINE_BUF_LEN   1024
 #define HOST_NAME_LEN       32
 
+#define ACTION_FILTER   1
+#define ACTION_LIST     2
+
 #define logprintf(format, arg...) fprintf(stderr, "[NOTICE]%s:%d:%s "format"\n", __FILE__, __LINE__, __func__, ##arg)
 
 typedef struct _global_variable_t
