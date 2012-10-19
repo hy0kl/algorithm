@@ -41,6 +41,7 @@
 
 #define _DEBUG  1
 
+#define SERVER_TAG          "eac v 0.0.1"
 #define POST_DATA_BUF_LEN   2048
 #define FILE_PATH_LEN       256
 #define READ_LINE_BUF_LEN   1024
