@@ -185,7 +185,11 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     evhttp_parse_query(decode_uri, &http_query);
 
     int   output_format = 0;
-    char  tpl_buf[POST_DATA_BUF_LEN] = {0};
+    char  tpl_buf[TPL_BUF_LEN]        = {0};
+    char  post_buf[POST_DATA_BUF_LEN] = {0};
+    char *p = NULL;
+    char *pt   = NULL;
+    char *find = NULL;
 
 #if (_DEBUG)
     logprintf("uri: %s", decode_uri);
@@ -225,12 +229,27 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     const char *post_data = (char *)EVBUFFER_DATA(req->input_buffer);
     if (post_data)
     {
-        logprintf("POST: [%s]", post_data);
+        snprintf(post_buf, POST_DATA_BUF_LEN, "%s", post_data);
+        logprintf("POST: [%s]", post_buf);
+        find = post_buf;
+        if (NULL != (find = strstr(post_buf, "word=")))
+        {
+            find += 5;
+            p = find;
+
+            if (NULL != (pt = strchr(p, '&')))
+            {
+                *pt = '\0';
+            }
+        }
+        word = find;
     }
+#if (_DEBUG)
     else
     {
         logprintf("NO POST data.");
     }
+#endif
 
     // portions handle
     filter_process(word, tpl_buf, POST_DATA_BUF_LEN);
