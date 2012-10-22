@@ -200,9 +200,10 @@ static int list_keyword(char *buf, size_t buf_len)
         goto STAT_ERR;
     }
 
+    // TODO.
     size = stat_buf.st_size;
     read(fd, read_buf, size > sizeof(read_buf) ? sizeof(read_buf) - 1 : size);
-    p += snprintf(p, buf_len - (p - buf),"<pre>%s</pre>", read_buf);
+    p += snprintf(p, buf_len - (p - buf), "<pre>%s</pre>", read_buf);
 
 STAT_ERR:
     close(fd);
