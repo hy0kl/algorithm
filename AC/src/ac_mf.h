@@ -50,6 +50,7 @@
 
 #define ACTION_FILTER   1
 #define ACTION_LIST     2
+#define ACTION_MEMORY   3
 
 #define logprintf(format, arg...) fprintf(stderr, "[NOTICE]%s:%d:%s "format"\n", __FILE__, __LINE__, __func__, ##arg)
 
