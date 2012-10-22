@@ -1,5 +1,8 @@
 /**
  * Author: hy0kle@gmail.com
+ * NOTE: p += snprintf(p, buf_len - (p - buf), "</pre>");
+ * 这种写法简单易读,但需要一个隐式的条件,那就是缓冲区足够大,
+ * 能容纳下全部内容,否则可能出 core.
  */
 #include "ac_mf.h"
 
@@ -216,7 +219,22 @@ FINISH:
 
 static int list_memory_pattern(char *buf, const size_t buf_len)
 {
+    assert(NULL != buf);
+    assert(buf_len > 128);
+
     int ret = 0;
+    char *p = buf;
+    ACSM_PATTERN *mlist = NULL;
+
+    p += snprintf(p, buf_len - (p - buf), "<pre>\n"
+            "---dump memory pattern---\n");
+    mlist = g_vars.acsm->acsmPatterns;
+    for (; NULL != mlist; mlist = mlist->next)
+    {
+        mlist->nmatch = 0;
+        p += snprintf(p, buf_len - (p - buf), "%s\n", mlist->patrn);
+    }
+    p += snprintf(p, buf_len - (p - buf), "</pre>");
 
     return ret;
 }
