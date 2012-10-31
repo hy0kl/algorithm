@@ -52,6 +52,14 @@
 #define ACTION_LIST     2
 #define ACTION_MEMORY   3
 
+/** output format */
+#define OUTPUT_AS_HTML 0
+#define OUTPUT_AS_JSON 1
+
+#define CRLF    "<br />"
+#define FORMAT_HTML "html"
+#define FORMAT_JSON "json"
+
 #define logprintf(format, arg...) fprintf(stderr, "[NOTICE]%s:%d:%s "format"\n", __FILE__, __LINE__, __func__, ##arg)
 
 typedef struct _global_variable_t
