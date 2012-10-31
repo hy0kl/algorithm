@@ -40,8 +40,10 @@ class machinePatrol
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $api);
         /**
-         *     Note: Passing an array to CURLOPT_POSTFIELDS will encode the data as multipart/form-data, while passing a URL-encoded string will encode the data as application/x-www-form-urlencoded. 
-         *         */
+         * Note: Passing an array to CURLOPT_POSTFIELDS will encode
+         * the data as multipart/form-data, while passing a 
+         * URL-encoded string will encode the data as application/x-www-form-urlencoded. 
+         **/
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
