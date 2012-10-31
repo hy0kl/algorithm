@@ -130,6 +130,8 @@ static void clear_match_count()
     {
         mlist->nmatch = 0;
     }
+
+    return;
 }
 
 static int filter_process(const char *data, int output_format, char *buf, const size_t buf_len)
@@ -455,7 +457,6 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     evbuffer_free(buf);
 
     return;
-
 }
 
 int main (int argc, char **argv)
