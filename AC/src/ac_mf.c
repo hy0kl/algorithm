@@ -230,37 +230,54 @@ static int build_json_body(const char *data, char *buf, const size_t buf_len)
     return ret;
 }
 
-static int list_keyword(char *buf, const size_t buf_len)
+static int list_keyword(struct evbuffer *ev_buf)
 {
-    assert(NULL != buf);
-    assert(buf_len > 128);
+    assert(NULL != ev_buf);
 
     int ret = 0;
     int fd = 0;
-    char *p = buf;
     struct stat stat_buf;
     size_t size = 0;
-    char read_buf[1024 * 10] = {0};
+    char read_buf[1024 * 200] = {0};
 
     fd = open(gconfig.keyword_file, O_RDONLY);
     if (-1 == fd || 0 == fd)
     {
-        p += snprintf(p, buf_len - (p - buf), "Can NOT open('%s')\n", gconfig.keyword_file);
+        evbuffer_add_printf(ev_buf, "Can NOT open('%s')\n", gconfig.keyword_file);
         ret = -1;
         goto FINISH;
     }
 
     if (0 != fstat(fd, &stat_buf))
     {
-        p += snprintf(p, buf_len - (p - buf), "Can get fstat()\n");
+        evbuffer_add_printf(ev_buf, "Can get fstat()\n");
         ret = -1;
         goto STAT_ERR;
     }
 
-    // TODO.
-    size = stat_buf.st_size;
-    read(fd, read_buf, size > sizeof(read_buf) ? sizeof(read_buf) - 1 : size);
-    p += snprintf(p, buf_len - (p - buf), "<pre>%s</pre>", read_buf);
+    evbuffer_add_printf(ev_buf, "<pre>");
+    // stat_buf.st_size;
+    size = 0;
+    ssize_t r_size = 0;
+    while (size <= stat_buf.st_size)
+    {
+        lseek(fd, size, SEEK_SET);
+        r_size = read(fd, read_buf, sizeof(read_buf) - 1);
+        if (-1 == r_size)
+        {
+            break;
+        }
+        read_buf[r_size] = '\0';
+        logprintf("read: [%s]", read_buf);
+        evbuffer_add_printf(ev_buf, "%s", read_buf);
+
+        size += r_size;
+        if (0 == r_size)
+        {
+            break;
+        }
+    }
+    evbuffer_add_printf(ev_buf, "</pre>");
 
 STAT_ERR:
     close(fd);
@@ -269,24 +286,22 @@ FINISH:
     return ret;
 }
 
-static int list_memory_pattern(char *buf, const size_t buf_len)
+static int list_memory_pattern(struct evbuffer *ev_buf)
 {
-    assert(NULL != buf);
-    assert(buf_len > 128);
+    assert(NULL != ev_buf);
 
     int ret = 0;
-    char *p = buf;
     ACSM_PATTERN *mlist = NULL;
 
-    p += snprintf(p, buf_len - (p - buf), "<pre>\n"
+    evbuffer_add_printf(ev_buf, "<pre>\n"
             "---dump memory pattern---\n");
     mlist = g_vars.acsm->acsmPatterns;
     for (; NULL != mlist; mlist = mlist->next)
     {
         mlist->nmatch = 0;
-        p += snprintf(p, buf_len - (p - buf), "%s\n", mlist->patrn);
+        evbuffer_add_printf(ev_buf, "%s\n", mlist->patrn);
     }
-    p += snprintf(p, buf_len - (p - buf), "</pre>");
+    evbuffer_add_printf(ev_buf, "</pre>");
 
     return ret;
 }
@@ -393,11 +408,11 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     switch (do_action)
     {
     case ACTION_LIST:
-        list_keyword(tpl_buf, sizeof(tpl_buf));
+        list_keyword(buf);
         break;
 
     case ACTION_MEMORY:
-        list_memory_pattern(tpl_buf, sizeof(tpl_buf));
+        list_memory_pattern(buf);
         break;
 
     case ACTION_FILTER:
