@@ -238,7 +238,7 @@ static int list_keyword(struct evbuffer *ev_buf)
     int fd = 0;
     struct stat stat_buf;
     size_t size = 0;
-    char read_buf[1024 * 200] = {0};
+    char read_buf[1024 * 10] = {0};
 
     fd = open(gconfig.keyword_file, O_RDONLY);
     if (-1 == fd || 0 == fd)
