@@ -43,7 +43,6 @@
 
 #define SERVER_TAG          "eac v 0.0.1"
 #define POST_DATA_BUF_LEN   1024 * 20
-#define TPL_BUF_LEN         1024 * 20
 #define FILE_PATH_LEN       256
 #define READ_LINE_BUF_LEN   1024
 #define HOST_NAME_LEN       32

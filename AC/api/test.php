@@ -13,7 +13,7 @@ if (isset($_POST) && count($_POST) && isset($_POST['word']))
 <div class="webui">
 <form action="<?php echo $_SERVER['SCRIPT_NAME'];?>" method="post">
 <div>
-    <textarea name="word" rows="20" cols="60"><?php echo $post_data['word']; ?></textarea>
+    <textarea name="word" rows="20" cols="60"><?php echo htmlspecialchars($post_data['word']); ?></textarea>
 </div>
 <input type="submit" /> <input type="reset" />
 </form>

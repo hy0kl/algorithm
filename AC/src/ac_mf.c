@@ -134,30 +134,26 @@ static void clear_match_count()
     return;
 }
 
-static int filter_process(const char *data, int output_format, char *buf, const size_t buf_len)
+static int filter_process(const char *data, int output_format, struct evbuffer *ev_buf)
 {
+    assert(NULL != ev_buf);
+
     int   ret = 0;
-    char *p   = NULL;
     ACSM_PATTERN * mlist = NULL;
-
-    assert(NULL != buf);
-    assert(buf_len > 1014);
-
-    p = buf;
-    *p = '\0';
 
     if (data)
     {
         clear_match_count();
         ret = acsmSearch(g_vars.acsm, (unsigned char *)data, strlen(data), PrintMatch);
-        logprintf("acsmSearch() = %d", ret);
+        //logprintf("acsmSearch() = %d", ret);
         mlist = g_vars.acsm->acsmPatterns;
 
         switch (output_format)
         {
         case OUTPUT_AS_JSON:    /** json */
-            p += snprintf(p, buf_len - (p - buf), "\"stat\": [");
+            evbuffer_add_printf(ev_buf, "{\"error\": 0, \"stat\": [");
 
+            int flag = 0;
             for (; NULL != mlist; mlist = mlist->next)
             {
                 if (! mlist->nmatch)
@@ -165,20 +161,23 @@ static int filter_process(const char *data, int output_format, char *buf, const 
                     continue;
                 }
 
-                p += snprintf(p, buf_len - (p - buf), "{\"keyword\": \"%s\", \"hit_count\": %d}, ",
+                evbuffer_add_printf(ev_buf, "%s{\"keyword\": \"%s\", \"hit_count\": %d}",
+                    flag ? ", " : "",
                     mlist->nocase ? mlist->patrn : mlist->casepatrn, mlist->nmatch);
+                flag = 1;
             }
 
-            if (',' == *(p - 2))
-            {
-                p -= 2;
-                *p = '\0';
-            }
-            p += snprintf(p, buf_len - (p - buf), "]");
+            evbuffer_add_printf(ev_buf, "]}");
             break;
 
         case OUTPUT_AS_HTML:    /** html */
         default:
+            evbuffer_add_printf(ev_buf, "<html><head><title>ac server demo</title></head>\
+</head><body>\
+<div>word: %s</div>\
+<div>***filter result***</div>\
+<div>",
+        data ? data : "No input.");
             for (; NULL != mlist; mlist = mlist->next)
             {
                 if (! mlist->nmatch)
@@ -186,48 +185,13 @@ static int filter_process(const char *data, int output_format, char *buf, const 
                     continue;
                 }
 
-                p += snprintf(p, buf_len - (p - buf), "<div>filter-key: %s, hit count: %d</div>",
+                evbuffer_add_printf(ev_buf, "<div>filter-key: %s, hit count: %d</div>",
                     mlist->nocase ? mlist->patrn : mlist->casepatrn, mlist->nmatch);
             }
+            evbuffer_add_printf(ev_buf, "</div></body></html>");
             break;
         }
     }
-
-    return ret;
-}
-
-static int build_html_body(const char *query, const char *data, char *buf, const size_t buf_len)
-{
-    assert(NULL != data);
-    assert(NULL != buf);
-    assert(buf_len > 128);
-
-    int ret = 0;
-    char *p = buf;
-    *p = '\0';
-
-    p += snprintf(p, buf_len - (p - buf), "<html><head><title>ac server demo</title></head>\
-</head><body>\
-<div>word: %s</div>\
-<div>***filter result***</div>\
-<div>%s</div>\
-</body></html>",
-        query ? query : "No input.", data);
-
-    return ret;
-}
-
-static int build_json_body(const char *data, char *buf, const size_t buf_len)
-{
-    assert(NULL != data);
-    assert(NULL != buf);
-    assert(buf_len > 128);
-
-    int ret = 0;
-    char *p = buf;
-    *p = '\0';
-
-    p += snprintf(p, buf_len - (p - buf), "{\"error\": 0, %s}", data);
 
     return ret;
 }
@@ -321,8 +285,6 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
 
     int   output_format = 0;
     int   do_action = ACTION_FILTER;
-    char  tpl_buf[TPL_BUF_LEN]        = {0};
-    char  work_buf[TPL_BUF_LEN]       = {0};
     char  post_buf[POST_DATA_BUF_LEN] = {0};
     char *p = NULL;
     char *pt   = NULL;
@@ -420,20 +382,7 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     case ACTION_FILTER:
     default:
         // portions handle
-        filter_process(word, output_format, work_buf, sizeof(work_buf));
-
-        /** build page */
-        switch (output_format)
-        {
-            case OUTPUT_AS_JSON:
-                build_json_body(work_buf, tpl_buf, sizeof(tpl_buf));
-                break;
-
-            case OUTPUT_AS_HTML:
-            default:
-                build_html_body(word, work_buf, tpl_buf, sizeof(tpl_buf));
-                break;
-        }
+        filter_process(word, output_format, buf);
         break;
     }
     //处理输出header头
@@ -445,9 +394,6 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
     evhttp_add_header(req->output_headers, "Cache-Control", "no-cache");
     evhttp_add_header(req->output_headers, "Expires", "-1");
     evhttp_add_header(req->output_headers, "Server", SERVER_TAG);    /** libevent http server */
-
-    //处理输出数据
-    evbuffer_add_printf(buf, "%s", tpl_buf);
 
     //返回code 200
     evhttp_send_reply(req, HTTP_OK, "OK", buf);
