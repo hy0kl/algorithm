@@ -61,9 +61,12 @@ class machinePatrol
     }
 }
 
+/**
+// just test
 $para = array(
     'word' => 'test for 这是有一些敏感词,比如: 西单. 行房, sb',
     //'word' => '这行没有敏感词',
 );
 //machinePatrol::$time_out = 1;
 print_r(machinePatrol::getPatrol($para));
+*/
