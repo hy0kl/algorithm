@@ -200,6 +200,64 @@ int daemonize(int nochdir, int noclose)
     return(0);
 }
 
+static void handler(int signo)
+{
+    fprintf(stderr, "Get one signal: %d. man sigaction.\n", signo);
+    return;
+}
+
+void signal_setup(void)
+{
+    static int signo[] = {
+        SIGHUP,
+        SIGINT,     /* ctrl + c */
+        SIGCHLD,    /* 僵死进程或线程的信号 */
+        SIGPIPE,
+        SIGALRM,
+        SIGUSR1,
+        SIGUSR2,
+        SIGTERM,
+        //SIGCLD,
+
+#ifdef  SIGTSTP
+        /* background tty read */
+        SIGTSTP,
+#endif
+#ifdef  SIGTTIN
+        /* background tty read */
+        SIGTTIN,
+#endif
+#ifdef SIGTTOU
+        SIGTTOU,
+#endif
+        SIGNO_END
+    };
+
+    int i = 0;
+    struct sigaction sa;
+    //sa.sa_handler = SIG_IGN;    //设定接受到指定信号后的动作为忽略
+    sa.sa_handler = handler;
+    sa.sa_flags   = SA_SIGINFO;
+
+    if (-1 == sigemptyset(&sa.sa_mask))   //初始化信号集为空
+    {
+        fprintf(stderr, "failed to init sa_mask.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (i = 0; SIGNO_END != signo[i]; i++)
+    {
+        //屏蔽信号
+        if (-1 == sigaction(signo[i], &sa, NULL))
+        {
+            fprintf(stderr, "failed to ignore: %d\n", signo[i]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    return (void)0;
+}
+
 static void init_config(void)
 {
 
@@ -552,6 +610,9 @@ int main (int argc, char **argv)
 #if (_DEBUG)
     print_config();
 #endif
+
+    /** 信息屏蔽 */
+    signal_setup();
 
     init_acsm(&acsm);
     /* Generate GtoTo Table and Fail Table */

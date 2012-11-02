@@ -76,6 +76,8 @@ static const char build_date[] = __DATE__ " " __TIME__;
 static const char build_date[] = "unknown";
 #endif
 
+#define SIGNO_END   111
+
 #define logprintf(format, arg...) fprintf(stderr, "[NOTICE]%s:%d:%s "format"\n", __FILE__, __LINE__, __func__, ##arg)
 
 typedef struct _global_variable_t
