@@ -19,7 +19,7 @@ static void usage(void)
            "-h            show this help and exit\n");
     printf("-H <hostname> hostname(default: %s)\n", DEFAULT_HOSTNAME);
     printf("-P <num>      listen port(default: %d)\n", DEFAULT_PORT);
-    printf("-t <timeout>  set HTTP timeout\n");
+    printf("-t <timeout>  set HTTP timeout(default: %d)\n", DEFAULT_TIMEOUT);
     printf("-c [0|1]      case switch(default: %d)\n", DEFAULT_CASE_SWITCH);
 
     return;
