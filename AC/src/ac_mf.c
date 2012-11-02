@@ -14,7 +14,7 @@ static void usage(void)
     printf(PACKAGE " " VERSION "\n");
     printf("Build-date %s\n", build_date);
     printf("-p <file>     set ABS path(prefix), Necessarily\n"
-           "-f <file>     filter keywords file name"
+           "-f <file>     filter keywords file name\n"
            "-v            show version and help\n"
            "-h            show this help and exit\n");
     printf("-H <hostname> hostname(default: %s)\n", DEFAULT_HOSTNAME);
@@ -31,11 +31,11 @@ static int parse_args(int argc, char *argv[])
     int ret = 0;
     int t_opt;
     size_t str_len = 0;
+    char tmp_str[FILE_PATH_LEN] = {0};
 
 #if (_DEBUG)
     logprintf("grgc = %d", argc);
 #endif
-
 
     while (-1 != (c = getopt(argc, argv,
         "p:"    /* ABS path for work(prefix) */
@@ -60,6 +60,7 @@ static int parse_args(int argc, char *argv[])
             {
                 usage();
                 ret = -1;
+                goto FINISH;
             }
             break;
 
@@ -67,12 +68,13 @@ static int parse_args(int argc, char *argv[])
             str_len = strlen(optarg);
             if (str_len)
             {
-                snprintf(gconfig.keyword_file, FILE_PATH_LEN, "%s/%s", gconfig.prefix, optarg);
+                snprintf(tmp_str, sizeof(tmp_str), "%s", optarg);
             }
             else
             {
                 usage();
                 ret = -1;
+                goto FINISH;
             }
             break;
 
@@ -86,6 +88,7 @@ static int parse_args(int argc, char *argv[])
             {
                 usage();
                 ret = -1;
+                goto FINISH;
             }
             break;
 
@@ -107,7 +110,7 @@ static int parse_args(int argc, char *argv[])
 
         case 'c':
             t_opt = atoi(optarg);
-            gconfig.timeout = t_opt;
+            gconfig.no_case = t_opt;
             break;
 
         case 'v':
@@ -117,7 +120,25 @@ static int parse_args(int argc, char *argv[])
         }
     }
 
+    snprintf(gconfig.keyword_file, sizeof(gconfig.keyword_file),
+        "%s/data/%s", gconfig.prefix, tmp_str[0] ? tmp_str : DEFINE_KEYWORD_FILE);
+
+FINISH:
     return ret;
+}
+
+static void print_config(void)
+{
+    printf("---gconfig---\n");
+    printf("prefix:       %s\n", gconfig.prefix);
+    printf("keyword_file: %s\n", gconfig.keyword_file);
+    printf("hostname:     %s\n", gconfig.hostname);
+    printf("port:         %d\n", gconfig.port);
+    printf("timeout:      %d\n", gconfig.timeout);
+    printf("no_case:      %d\n", gconfig.no_case);
+    printf("---end print gconfig---\n");
+
+    return;
 }
 
 int daemonize(int nochdir, int noclose)
@@ -187,9 +208,10 @@ static void init_config(void)
     gconfig.port      = DEFAULT_PORT;
     gconfig.timeout   = DEFAULT_TIMEOUT;
 
+    snprintf(gconfig.prefix, sizeof(gconfig.prefix), "%s", DEFAULT_PREFIX);
     snprintf(gconfig.hostname, HOST_NAME_LEN, "%s", DEFAULT_HOSTNAME);
     snprintf(gconfig.keyword_file, FILE_PATH_LEN, "%s/data/%s",
-        DEFAULT_PREFIX, DEFINE_KEYWORD_FILE);
+        gconfig.prefix, DEFINE_KEYWORD_FILE);
 
     return;
 }
@@ -527,6 +549,9 @@ int main (int argc, char **argv)
         fprintf(stderr, "parse args error.\n");
         goto FINISH;
     }
+#if (_DEBUG)
+    print_config();
+#endif
 
     init_acsm(&acsm);
     /* Generate GtoTo Table and Fail Table */
