@@ -9,6 +9,117 @@
 config_t          gconfig;
 global_variable_t g_vars;
 
+static void usage(void)
+{
+    printf(PACKAGE " " VERSION "\n");
+    printf("Build-date %s\n", build_date);
+    printf("-p <file>     set ABS path(prefix), Necessarily\n"
+           "-f <file>     filter keywords file name"
+           "-v            show version and help\n"
+           "-h            show this help and exit\n");
+    printf("-H <hostname> hostname(default: %s)\n", DEFAULT_HOSTNAME);
+    printf("-P <num>      listen port(default: %d)\n", DEFAULT_PORT);
+    printf("-t <timeout>  set HTTP timeout\n");
+    printf("-c [0|1]      case switch(default: %d)\n", DEFAULT_CASE_SWITCH);
+
+    return;
+}
+
+static int parse_args(int argc, char *argv[])
+{
+    int c = 0;
+    int ret = 0;
+    int t_opt;
+    size_t str_len = 0;
+
+#if (_DEBUG)
+    logprintf("grgc = %d", argc);
+#endif
+
+
+    while (-1 != (c = getopt(argc, argv,
+        "p:"    /* ABS path for work(prefix) */
+        "f:"    /* filter keywords file name*/
+        "H:"    /* hostname */
+        "P:"    /* listen port */
+        "t:"    /* set HTTP timeout */
+        "c:"    /* case switch */
+        "v"     /* show version */
+        "h"     /* show usage */
+    )))
+    {
+        switch (c)
+        {
+        case 'p':
+            str_len = strlen(optarg);
+            if (str_len)
+            {
+                snprintf(gconfig.prefix, FILE_PATH_LEN, "%s", optarg);
+            }
+            else
+            {
+                usage();
+                ret = -1;
+            }
+            break;
+
+        case 'f':
+            str_len = strlen(optarg);
+            if (str_len)
+            {
+                snprintf(gconfig.keyword_file, FILE_PATH_LEN, "%s/%s", gconfig.prefix, optarg);
+            }
+            else
+            {
+                usage();
+                ret = -1;
+            }
+            break;
+
+        case 'H':
+            str_len = strlen(optarg);
+            if (str_len)
+            {
+                snprintf(gconfig.hostname, HOST_NAME_LEN, "%s", optarg);
+            }
+            else
+            {
+                usage();
+                ret = -1;
+            }
+            break;
+
+        case 'P':
+            t_opt = atoi(optarg);
+            if (t_opt > 0)
+            {
+                gconfig.port = t_opt;
+            }
+            break;
+
+        case 't':
+            t_opt = atoi(optarg);
+            if (t_opt > 0 && t_opt <= 60 )
+            {
+                gconfig.timeout = t_opt;
+            }
+            break;
+
+        case 'c':
+            t_opt = atoi(optarg);
+            gconfig.timeout = t_opt;
+            break;
+
+        case 'v':
+        case 'h':
+            usage();
+            exit(EXIT_SUCCESS);
+        }
+    }
+
+    return ret;
+}
+
 int daemonize(int nochdir, int noclose)
 {
     int fd;
@@ -68,19 +179,19 @@ int daemonize(int nochdir, int noclose)
     return(0);
 }
 
-static int init_config()
+static void init_config(void)
 {
-    int ret = 0;
 
-    gconfig.log_level = 4;
-    gconfig.no_case   = 1;
-    gconfig.port      = 8668;
-    gconfig.timeout   = 1;
+    gconfig.log_level = DEFAULT_LOG_LEVEL;
+    gconfig.no_case   = DEFAULT_CASE_SWITCH;
+    gconfig.port      = DEFAULT_PORT;
+    gconfig.timeout   = DEFAULT_TIMEOUT;
 
-    snprintf(gconfig.hostname, HOST_NAME_LEN, "%s", "0.0.0.0");
-    snprintf(gconfig.keyword_file, FILE_PATH_LEN, "%s", "./data/mf.keyword.txt");
+    snprintf(gconfig.hostname, HOST_NAME_LEN, "%s", DEFAULT_HOSTNAME);
+    snprintf(gconfig.keyword_file, FILE_PATH_LEN, "%s/data/%s",
+        DEFAULT_PREFIX, DEFINE_KEYWORD_FILE);
 
-    return ret;
+    return;
 }
 
 static int init_acsm(ACSM_STRUCT **acsm)
@@ -411,6 +522,11 @@ int main (int argc, char **argv)
     ACSM_STRUCT    *acsm = NULL;
 
     init_config();
+    if (0 != parse_args(argc, argv))
+    {
+        fprintf(stderr, "parse args error.\n");
+        goto FINISH;
+    }
 
     init_acsm(&acsm);
     /* Generate GtoTo Table and Fail Table */
@@ -440,6 +556,7 @@ int main (int argc, char **argv)
     evhttp_free(httpd);
     acsmFree(acsm);
 
+FINISH:
     return (0);
 }
 

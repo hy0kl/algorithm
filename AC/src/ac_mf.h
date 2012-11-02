@@ -41,6 +41,9 @@
 
 #define _DEBUG  1
 
+#define PACKAGE     "ac-mf"
+#define VERSION     "0.0.1"
+
 #define SERVER_TAG          "eac v 0.0.1"
 #define POST_DATA_BUF_LEN   1024 * 20
 #define FILE_PATH_LEN       256
@@ -59,6 +62,20 @@
 #define FORMAT_HTML "html"
 #define FORMAT_JSON "json"
 
+#define DEFAULT_LOG_LEVEL   4   /** unused */
+#define DEFAULT_TIMEOUT     1
+#define DEFAULT_HOSTNAME    "0.0.0.0"
+#define DEFAULT_PORT        8668
+#define DEFINE_KEYWORD_FILE "mf.keyword.txt"
+#define DEFAULT_PREFIX      "."
+#define DEFAULT_CASE_SWITCH 1
+
+#if defined(__DATE__) && defined(__TIME__)
+static const char build_date[] = __DATE__ " " __TIME__;
+#else
+static const char build_date[] = "unknown";
+#endif
+
 #define logprintf(format, arg...) fprintf(stderr, "[NOTICE]%s:%d:%s "format"\n", __FILE__, __LINE__, __func__, ##arg)
 
 typedef struct _global_variable_t
@@ -73,6 +90,7 @@ typedef struct _config_t
     int  no_case;
     int  port;
     int  timeout;
+    char prefix[FILE_PATH_LEN];
     char hostname[HOST_NAME_LEN];
     char keyword_file[FILE_PATH_LEN];
 }  config_t;

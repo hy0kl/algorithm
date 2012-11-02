@@ -18,6 +18,8 @@
 *.dSYM
 a.out
 tags
-
+data
 doc
 acsmx
+ac-mf
+test
