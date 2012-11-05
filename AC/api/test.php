@@ -1,4 +1,5 @@
 <?php
+header('Content-type: text/html; charset=UTF-8');
 define('WORK_PATH', dirname(__FILE__));
 require(WORK_PATH . '/machinePatrol.php');
 $post_data = array(
