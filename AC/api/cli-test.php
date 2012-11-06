@@ -16,7 +16,7 @@ while (! feof($fp))
 {
     $line = fgets($fp, 1024);
     $post = array(
-        'word' => $line,  
+        'word' => $line,
     );
 
     $response = machinePatrol::getPatrol($post);
