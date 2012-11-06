@@ -39,7 +39,7 @@
 */
 #include "acsmx.h"
 
-#define _DEBUG  1
+#define _DEBUG  0
 
 #define PACKAGE     "ac-mf"
 #define VERSION     "0.0.1"

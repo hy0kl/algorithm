@@ -550,8 +550,9 @@ static void api_proxy_handler(struct evhttp_request *req, void *arg)
             {
                 *pt = '\0';
             }
+
+            word = find;
         }
-        word = find;
     }
 #if (_DEBUG)
     else

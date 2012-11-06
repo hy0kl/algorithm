@@ -76,7 +76,7 @@ if [ "start" == "$runtype" ]; then
         exit -1
     fi
 
-    $abs_path/$pro_name -p "$abs_path"
+    nohup $abs_path/$pro_name -p "$abs_path" &
 
     exit 0;
 fi
