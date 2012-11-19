@@ -5,10 +5,10 @@ LIBDIR = \
 		-levent
 
 TARGET = acsmx
-SERVER = ac-mf
+SERVER = acmf
 
 OBJS1 = entry.o acsmx.o
-OBJS2 = ac_mf.o acsmx.o
+OBJS2 = acmf.o acsmx.o util.o
 
 all: $(TARGET) $(SERVER)
 	rm -f *.o

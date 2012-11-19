@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('PRC');
 define('WORK_PATH', dirname(__FILE__));
 require(WORK_PATH . '/machinePatrol.php');
 
@@ -20,7 +21,8 @@ while (! feof($fp))
     );
 
     $response = machinePatrol::getPatrol($post);
-    print_r($response);
+    $log = sprintf('%s %s%s', date('Y-m-d-H:m:s'), json_encode($response), "\n");
+    echo $log;
 }
 
 fclose($fp);

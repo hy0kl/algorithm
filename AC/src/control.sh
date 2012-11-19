@@ -6,7 +6,7 @@ abs_path=$(pwd)
 #start_time=$(date +"%Y-%m-%d:%H:%M:%S")
 time_str=$(date +"%Y-%m-%d")
 env_dir="data lua conf log"
-pro_name="ac-mf"
+pro_name="acmf"
 
 Usage="$0 <runtype:start|stop>"
 if [ $# -lt 1 ];

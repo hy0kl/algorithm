@@ -21,5 +21,6 @@ tags
 data
 doc
 acsmx
-ac-mf
+acmf
 test
+nohup.out
