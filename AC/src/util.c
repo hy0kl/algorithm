@@ -1,5 +1,8 @@
 #include "util.h"
 
+config_t          gconfig;
+global_variable_t g_vars;
+
 void usage(void)
 {
     printf(PACKAGE " " VERSION "\n");
@@ -333,6 +336,7 @@ int filter_process(const char *data, int output_format, struct evbuffer *ev_buf)
         switch (output_format)
         {
         case OUTPUT_AS_JSON:    /** json */
+        {
             evbuffer_add_printf(ev_buf, "{\"error\": 0, \"stat\": [");
 
             int flag = 0;
@@ -351,9 +355,11 @@ int filter_process(const char *data, int output_format, struct evbuffer *ev_buf)
 
             evbuffer_add_printf(ev_buf, "]}");
             break;
+        }
 
         case OUTPUT_AS_HTML:    /** html */
         default:
+        {
             evbuffer_add_printf(ev_buf, "<html><head><title>ac server demo</title></head>\
 </head><body>\
 <div>word: %s</div>\
@@ -373,6 +379,7 @@ int filter_process(const char *data, int output_format, struct evbuffer *ev_buf)
             evbuffer_add_printf(ev_buf, "</div></body></html>");
             break;
         }
+        }
     }
 
     return ret;
@@ -387,6 +394,7 @@ int list_keyword(struct evbuffer *ev_buf)
     struct stat stat_buf;
     size_t size = 0;
     char read_buf[1024 * 10] = {0};
+    ssize_t r_size = 0;
 
     fd = open(gconfig.keyword_file, O_RDONLY);
     if (-1 == fd || 0 == fd)
@@ -406,7 +414,6 @@ int list_keyword(struct evbuffer *ev_buf)
     evbuffer_add_printf(ev_buf, "<pre>");
     // stat_buf.st_size;
     size = 0;
-    ssize_t r_size = 0;
     while (size <= stat_buf.st_size)
     {
         lseek(fd, size, SEEK_SET);

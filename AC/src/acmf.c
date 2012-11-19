@@ -7,10 +7,6 @@
 #include "ac_mf.h"
 #include "util.h"
 
-config_t          gconfig;
-global_variable_t g_vars;
-
-
 int main (int argc, char **argv)
 {
     struct evhttp *httpd = NULL;
