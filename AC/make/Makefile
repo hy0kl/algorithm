@@ -10,7 +10,7 @@
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
-GCC = gcc 
+GCC = gcc
 GCCFLAGS = -g -finline-functions -Wall -Winline -pipe
 
 HOME = /Users/yongjieyang
