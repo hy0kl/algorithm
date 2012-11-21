@@ -549,11 +549,12 @@ void PrintMatch (ACSM_PATTERN * pattern,ACSM_PATTERN * mlist, int nline,int inde
 
     }
 
+    /**
     if(mlist->nocase)
         fprintf (stdout, "Match KeyWord %s at %d line %d char\n", mlist->patrn, nline, index);
     else
         fprintf (stdout, "Match KeyWord %s at %d line %d char\n", mlist->casepatrn, nline, index);
-
+    */
 }
 
 /*

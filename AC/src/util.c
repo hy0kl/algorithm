@@ -324,12 +324,13 @@ int filter_process(const char *data, int output_format, struct evbuffer *ev_buf)
     assert(NULL != ev_buf);
 
     int   ret = 0;
+    int   hit = 0;
     ACSM_PATTERN * mlist = NULL;
 
     if (data)
     {
         clear_match_count();
-        ret = acsmSearch(g_vars.acsm, (unsigned char *)data, strlen(data), PrintMatch);
+        hit = acsmSearch(g_vars.acsm, (unsigned char *)data, strlen(data), PrintMatch);
         //logprintf("acsmSearch() = %d", ret);
         mlist = g_vars.acsm->acsmPatterns;
 
@@ -423,7 +424,9 @@ int list_keyword(struct evbuffer *ev_buf)
             break;
         }
         read_buf[r_size] = '\0';
+#if (_DEBUG)
         logprintf("read: [%s]", read_buf);
+#endif
         evbuffer_add_printf(ev_buf, "%s", read_buf);
 
         size += r_size;
