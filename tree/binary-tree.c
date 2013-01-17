@@ -89,7 +89,7 @@ binary_tree_t *insert(binary_tree_t **tree, u_char *src_data)
 
     size_t src_len = strlen(src_data);
     int n = (*tree)->node_data.len > src_len ? src_len : (*tree)->node_data.len;
-    int cmp_ret = strncmp((*tree)->node_data.data, src_data, n);
+    int cmp_ret = strncmp(src_data, (*tree)->node_data.data, n);
     //printf("tree->node_data.data: %s\n", (*tree)->node_data.data);
 
     if (0 == cmp_ret)
