@@ -52,7 +52,7 @@ typedef struct _binary_tree_t
 
 binary_tree_t *root = NULL;
 
-binary_tree_t *create_new_node(u_char *data)
+binary_tree_t *create_new_node(const u_char *data)
 {
     assert(NULL != data);
     //printf("create_new_node data %s\n", data);
@@ -84,7 +84,7 @@ binary_tree_t *create_new_node(u_char *data)
     return node;
 }
 
-binary_tree_t *insert(binary_tree_t **tree, u_char *src_data)
+binary_tree_t *insert(binary_tree_t **tree, const u_char *src_data)
 {
     assert(NULL != src_data);
 
@@ -121,7 +121,7 @@ binary_tree_t *insert(binary_tree_t **tree, u_char *src_data)
     }
 }
 
-void print_node(binary_tree_t *node)
+void print_node(const binary_tree_t *node)
 {
     assert(NULL != node);
 
@@ -137,7 +137,7 @@ void print_node(binary_tree_t *node)
  * d: root
  * r: right
  * */
-void ldr_print(binary_tree_t *tree)
+void ldr_print(const binary_tree_t *tree)
 {
     if (NULL != tree)
     {
@@ -147,7 +147,7 @@ void ldr_print(binary_tree_t *tree)
     }
 }
 
-void rdl_print(binary_tree_t *tree)
+void rdl_print(const binary_tree_t *tree)
 {
     if (NULL != tree)
     {
@@ -157,7 +157,7 @@ void rdl_print(binary_tree_t *tree)
     }
 }
 
-void dlr_print(binary_tree_t *tree)
+void dlr_print(const binary_tree_t *tree)
 {
     if (NULL != tree)
     {
@@ -167,7 +167,38 @@ void dlr_print(binary_tree_t *tree)
     }
 }
 
-u_char *test_data[] = {
+const binary_tree_t *find(const binary_tree_t *tree, const u_char *src_data)
+{
+    if (NULL == tree)
+    {
+        return NULL;
+    }
+
+    size_t src_len = strlen(src_data);
+    int n = tree->node_data.len > src_len ? src_len : tree->node_data.len;
+    int cmp_ret = strncmp(src_data, tree->node_data.data, n);
+
+    /** fix cmp result */
+    if (0 == cmp_ret && src_len != tree->node_data.len)
+    {
+        cmp_ret = src_len - tree->node_data.len;
+    }
+
+    if (0 == cmp_ret)
+    {
+        return tree;
+    }
+    else if (cmp_ret < 0)
+    {
+        return find(tree->left, src_data);
+    }
+    else
+    {
+        return find(tree->right, src_data);
+    }
+}
+
+static u_char *test_data[] = {
     "5",
     "7",
     "abc",
@@ -184,15 +215,13 @@ u_char *test_data[] = {
 int main(int argc, char *argv[])
 {
     int i = 0;
-    binary_tree_t *tmp_root = NULL;
+    const binary_tree_t *tmp_node = NULL;
     root = create_new_node("hy");
-
-    tmp_root = root;
 
     for (; test_data[i]; i++)
     {
         printf("input data: %s\n", test_data[i]);
-        insert(&tmp_root, test_data[i]);
+        insert(&root, test_data[i]);
     }
     printf("\n");
 
@@ -208,7 +237,27 @@ int main(int argc, char *argv[])
     printf("\n\n");
     printf("---%sroot left right%s---\n", GREEN, NORMAL);
     dlr_print(root);
-    printf("---\n");
+    printf("---\n\n");
+
+    static u_char *f_data[] = {
+        "test",
+        "hy0l",
+        "gmail",
+        "9",
+        NULL,
+    };
+    printf("--- %sFind logic%s ---\n", MAGENTA, NORMAL);
+    for (i = 0; f_data[i]; i++)
+    {
+        if (NULL == (tmp_node = find(root, f_data[i])))
+        {
+            printf("Can NOT find %s%s%s from tree.\n", RED, f_data[i], NORMAL);
+        }
+        else {
+            printf("Find -> %s%s%s from tree :\n    ", RED, f_data[i], NORMAL);
+            print_node(tmp_node);
+        }
+    }
 
     return 0;
 }
