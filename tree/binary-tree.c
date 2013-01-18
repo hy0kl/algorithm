@@ -23,6 +23,15 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
+#define GREEN    "\e[1;32m"
+#define BLUE     "\e[1;34m"
+#define YELLOW   "\e[1;33m"
+#define RED      "\e[1;31m"
+
+char *MAGENTA  = "\e[01;35m";
+char *CYAN     = "\e[01;36m";
+char *NORMAL   = "\e[0m";
+
 /**
  * @describe:
  * @author: hy0kle@gmail.com
@@ -82,7 +91,6 @@ binary_tree_t *insert(binary_tree_t **tree, u_char *src_data)
     if (NULL == *tree)
     {
         *tree = create_new_node(src_data);
-        //printf("insert data: %s\n", src_data);
         //printf("tree->node_data.data: %s\n", (*tree)->node_data.data);
         return *tree;
     }
@@ -91,6 +99,12 @@ binary_tree_t *insert(binary_tree_t **tree, u_char *src_data)
     int n = (*tree)->node_data.len > src_len ? src_len : (*tree)->node_data.len;
     int cmp_ret = strncmp(src_data, (*tree)->node_data.data, n);
     //printf("tree->node_data.data: %s\n", (*tree)->node_data.data);
+
+    /** fix cmp result */
+    if (0 == cmp_ret && src_len != (*tree)->node_data.len)
+    {
+        cmp_ret = src_len - (*tree)->node_data.len;
+    }
 
     if (0 == cmp_ret)
     {
@@ -107,7 +121,18 @@ binary_tree_t *insert(binary_tree_t **tree, u_char *src_data)
     }
 }
 
-/** 
+void print_node(binary_tree_t *node)
+{
+    assert(NULL != node);
+
+    printf("|%sdata%s: %s%s%s\t", BLUE, NORMAL, MAGENTA, node->node_data.data, NORMAL);
+    printf("|    %scount%s: %s%d%s\t |\n",
+        BLUE, NORMAL, CYAN, node->node_data.count, NORMAL);
+
+    return;
+}
+
+/**
  * l: left
  * d: root
  * r: right
@@ -117,8 +142,7 @@ void ldr_print(binary_tree_t *tree)
     if (NULL != tree)
     {
         ldr_print(tree->left);
-        printf("data: %s\t", tree->node_data.data);
-        printf("count:%d\n", tree->node_data.count);
+        print_node(tree);
         ldr_print(tree->right);
     }
 }
@@ -128,8 +152,7 @@ void rdl_print(binary_tree_t *tree)
     if (NULL != tree)
     {
         rdl_print(tree->right);
-        printf("data: %s\t", tree->node_data.data);
-        printf("count:%d\n", tree->node_data.count);
+        print_node(tree);
         rdl_print(tree->left);
     }
 }
@@ -138,8 +161,7 @@ void dlr_print(binary_tree_t *tree)
 {
     if (NULL != tree)
     {
-        printf("data: %s\t", tree->node_data.data);
-        printf("count:%d\n", tree->node_data.count);
+        print_node(tree);
         dlr_print(tree->left);
         dlr_print(tree->right);
     }
@@ -148,6 +170,12 @@ void dlr_print(binary_tree_t *tree)
 u_char *test_data[] = {
     "5",
     "7",
+    "abc",
+    "test",
+    "t",
+    "abs",
+    "123",
+    "test",
     "1",
     "9",
     NULL,
@@ -157,8 +185,8 @@ int main(int argc, char *argv[])
 {
     int i = 0;
     binary_tree_t *tmp_root = NULL;
-    root = create_new_node("6");
-    
+    root = create_new_node("hy");
+
     tmp_root = root;
 
     for (; test_data[i]; i++)
@@ -166,17 +194,21 @@ int main(int argc, char *argv[])
         printf("input data: %s\n", test_data[i]);
         insert(&tmp_root, test_data[i]);
     }
+    printf("\n");
 
-    printf("---left root right\n");
+    printf("---%sleft root right%s---\n", RED, NORMAL);
     ldr_print(root);
-    
-    printf("\n\n");
-    printf("---right root left\n");
-    rdl_print(root);
+    printf("---");
 
     printf("\n\n");
-    printf("---root left right\n");
+    printf("---%sright root left%s---\n", YELLOW, NORMAL);
+    rdl_print(root);
+    printf("---");
+
+    printf("\n\n");
+    printf("---%sroot left right%s---\n", GREEN, NORMAL);
     dlr_print(root);
+    printf("---\n");
 
     return 0;
 }
