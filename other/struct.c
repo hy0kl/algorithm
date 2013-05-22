@@ -51,13 +51,22 @@ inline point_t point_make(int x, int y)
 
 int main(int argc, char *argv[])
 {
-    point_t p;
+    point_t p;  /** 开辟内存 */
     p.x = 1;
     p.y = 22;
 
+    /** 开辟一块新内存 */
     point_t t = point_make(5, 99);
 
     dump(t);
+    dump(p);
+
+    /**
+     * 将 &t 指向的内存中内容拷贝到 &p 指向的内存中
+     * 此时 t 和 p 拥有同样的内容
+     * p 原来的内容被覆盖
+     * */
+    p = t;
     dump(p);
 
     return 0;
