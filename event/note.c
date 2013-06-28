@@ -59,3 +59,18 @@ select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *re
 
 int
 fcntl(int fildes, int cmd, ...);
+
+/***/
+#include <arpa/inet.h>
+
+uint32_t
+htonl(uint32_t hostlong);
+
+uint16_t
+htons(uint16_t hostshort);
+
+uint32_t
+ntohl(uint32_t netlong);
+
+uint16_t
+ntohs(uint16_t netshort);
