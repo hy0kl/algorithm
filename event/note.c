@@ -53,3 +53,9 @@ FD_ZERO(fd_set *fdset);
 int
 select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict errorfds,
         struct timeval *restrict timeout);
+
+/***/
+#include <fcntl.h>
+
+int
+fcntl(int fildes, int cmd, ...);
