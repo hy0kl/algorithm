@@ -74,3 +74,18 @@ ntohl(uint32_t netlong);
 
 uint16_t
 ntohs(uint16_t netshort);
+
+/***/
+#include <stdio.h>
+
+void
+setbuf(FILE *restrict stream, char *restrict buf);
+
+void
+setbuffer(FILE *stream, char *buf, int size);
+
+int
+setlinebuf(FILE *stream);
+
+int
+setvbuf(FILE *restrict stream, char *restrict buf, int type, size_t size);
