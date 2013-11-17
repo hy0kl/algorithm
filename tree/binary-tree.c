@@ -40,7 +40,7 @@ typedef struct _smarty_str_t
 {
     unsigned int count; /** 重复出现的次数 */
     size_t  len;
-    u_char *data;
+    char *data;
 } smarty_str_t;
 
 typedef struct _binary_tree_t
@@ -52,7 +52,7 @@ typedef struct _binary_tree_t
 
 binary_tree_t *root = NULL;
 
-binary_tree_t *create_new_node(const u_char *data)
+binary_tree_t *create_new_node(const char *data)
 {
     assert(NULL != data);
     //printf("create_new_node data %s\n", data);
@@ -67,8 +67,8 @@ binary_tree_t *create_new_node(const u_char *data)
         exit(1);
     }
 
-    size = sizeof(u_char) * len + 1;
-    node->node_data.data = (u_char *)malloc(size);
+    size = sizeof(char) * len + 1;
+    node->node_data.data = (char *)malloc(size);
     if (NULL == node->node_data.data)
     {
         fprintf(stderr, "Can NOT malloc() for node->node_data.data, need size:%lu \n", size);
@@ -84,7 +84,7 @@ binary_tree_t *create_new_node(const u_char *data)
     return node;
 }
 
-binary_tree_t *insert(binary_tree_t **tree, const u_char *src_data)
+binary_tree_t *insert(binary_tree_t **tree, const char *src_data)
 {
     assert(NULL != src_data);
 
@@ -167,7 +167,7 @@ void dlr_print(const binary_tree_t *tree)
     }
 }
 
-const binary_tree_t *find(const binary_tree_t *tree, const u_char *src_data)
+const binary_tree_t *find(const binary_tree_t *tree, const char *src_data)
 {
     if (NULL == tree)
     {
@@ -198,7 +198,7 @@ const binary_tree_t *find(const binary_tree_t *tree, const u_char *src_data)
     }
 }
 
-static u_char *test_data[] = {
+static char *test_data[] = {
     "5",
     "7",
     "abc",
@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
     dlr_print(root);
     printf("---\n\n");
 
-    static u_char *f_data[] = {
+    static char *f_data[] = {
         "test",
         "hy0l",
         "gmail",
