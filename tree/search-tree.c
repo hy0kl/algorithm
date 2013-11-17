@@ -44,9 +44,9 @@ struct _tree_node_t
  *  接口申明
  * */
 tree_node_t *make_empty(tree_node_t *tree);
-tree_node_t *find(const node_value search, const tree_node_t *tree);
-tree_node_t *find_min(const tree_node_t *tree);
-tree_node_t *find_max(const tree_node_t *tree);
+tree_node_t *find(const node_value search, tree_node_t *tree);
+tree_node_t *find_min(tree_node_t *tree);
+tree_node_t *find_max(tree_node_t *tree);
 tree_node_t *insert(const node_value value, const tree_node_t *tree);
 tree_node_t *delete(const node_value value);
 
@@ -56,3 +56,31 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+tree_node_t *make_empty(tree_node_t *tree)
+{
+    if (NULL != tree)
+    {
+        make_empty(tree->left);
+        make_empty(tree->right);
+    }
+
+    return NULL;
+}
+
+tree_node_t *find(const node_value search, tree_node_t *tree)
+{
+    if (NULL == tree)
+    {
+        return NULL;
+    }
+    else if (search < tree->element)
+    {
+        return find(search, tree->left);
+    }
+    else
+    {
+        return find(search, tree->right);
+    }
+
+    return tree;
+}
