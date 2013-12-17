@@ -72,6 +72,13 @@ int main(int argc, char *argv[])
     tmp = find_max(root);
     logprintf("%sfind_max()%s = %d", YELLOW, NORMAL, tmp->element);
 
+    node_value search = 8;
+    tmp = find(search, root);
+    if (NULL != tmp)
+    {
+        logprintf("%ssearch: %d is in tree%s", MAGENTA, search, NORMAL);
+    }
+
     return 0;
 }
 
@@ -97,12 +104,14 @@ tree_node_t *find(const node_value search, tree_node_t *tree)
     {
         return find(search, tree->left);
     }
-    else
+    else if (search > tree->element)
     {
         return find(search, tree->right);
     }
-
-    return tree;
+    else
+    {
+        return tree;
+    }
 }
 
 /**
@@ -174,5 +183,16 @@ tree_node_t *insert(const node_value value, tree_node_t *tree)
     }
 
     return tree;
+}
+
+/**
+ * 删除-正如许多数据结构,最困难的操作是删除
+ * 如果节点是一片树叶,那么它可以被立即删除;
+ * 如果节点有一个儿子,则该节点可以在其父节点调整指针绕过该节点后被删除;
+ * 如果有两个儿子节点,一般的删除策略是用其右子树的最小的数据(很容易找到)代替该节点的数据并递归地删除那个节点(现在它是空的).右子树中的最小的节点不可能有左儿子,所以第二次 delete 要容易.
+ * */
+tree_node_t *delete(const node_value value, tree_node_t *tree)
+{
+
 }
 
