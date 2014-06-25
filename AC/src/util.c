@@ -329,7 +329,7 @@ int filter_process(const char *data, int output_format, struct evbuffer *ev_buf)
 
     if (data)
     {
-        clear_match_count();
+        //clear_match_count();
         hit = acsmSearch(g_vars.acsm, (unsigned char *)data, strlen(data), PrintMatch);
         //logprintf("acsmSearch() = %d", ret);
         mlist = g_vars.acsm->acsmPatterns;
@@ -351,7 +351,9 @@ int filter_process(const char *data, int output_format, struct evbuffer *ev_buf)
                 evbuffer_add_printf(ev_buf, "%s{\"keyword\": \"%s\", \"hit_count\": %d}",
                     flag ? ", " : "",
                     mlist->nocase ? mlist->patrn : mlist->casepatrn, mlist->nmatch);
+
                 flag = 1;
+                mlist->nmatch = 0;
             }
 
             evbuffer_add_printf(ev_buf, "]}");
@@ -376,6 +378,8 @@ int filter_process(const char *data, int output_format, struct evbuffer *ev_buf)
 
                 evbuffer_add_printf(ev_buf, "<div>filter-key: %s, hit count: %d</div>",
                     mlist->nocase ? mlist->patrn : mlist->casepatrn, mlist->nmatch);
+
+                mlist->nmatch = 0;
             }
             evbuffer_add_printf(ev_buf, "</div></body></html>");
             break;
