@@ -42,18 +42,12 @@ Build-date Jun 26 2014 16:15:18
 实例：
      http://yourhosts:8080/?format=json&word=%E5%85%B1%E4%BA%A7%E5%85%9A%E5%A4%A7%E5%A3%B0%E9%81%93%E6%98%AF%E4%BB%A3%E7%90%86%E5%95%86%E7%9A%84%E7%9F%AD%E5%8F%91%E7%9A%84%E5%A4%9A%E5%B0%91Fuck%E5%85%B1%E4%BA%A7%E5%85%9Afuck%E8%A5%BF%E8%97%8F
 
-          返回值：
-     {"error": 0, "stat": [{"keyword": "西藏", "hit_count": 1}, {"keyword": "FUCK", "hit_count": 2}, {"keyword": "共产党", "hit_count": 2}]}
-
-
-
+返回值：
+{"error": 0, "stat": [{"keyword": "西藏", "hit_count": 1}, {"keyword": "FUCK", "hit_count": 2}, {"keyword": "共产党", "hit_count": 2}]}
 
 http://yourhosts:8080/?format=json&word=%E8%AF%9A%E6%8B%9B%E6%9A%91%E5%81%87%E5%85%BC%E8%81%8C%E5%B0%8F%E6%97%B6%E5%B7%A5%EF%BC%8C%E6%AF%8F%E5%A4%A9%E5%9C%A8%E7%BA%BF2.3%E5%B0%8F%E6%97%B6%EF%BC%8C%E6%97%B6%E9%97%B4%E5%9C%B0%E7%82%B9%E6%B2%A1%E9%99%90%E5%88%B6%EF%BC%8C%E6%97%A5%E8%B5%9A80-150%E5%9B%AD%EF%BC%8C%E6%9C%89%E5%85%B4%E8%B6%A3%E8%81%94%E7%B3%BBQQ%E3%80%903609027004%E3%80%91%EF%BC%8C%E6%AD%A4%E5%A4%84%E4%B8%8D%E5%9B%9E%E5%A4%8D
 
-     
-     返回值：
+
+返回值：
 {"error": 0, "stat": [{"keyword": "联系", "hit_count": 1}, {"keyword": "QQ", "hit_count": 2}, {"keyword": "QQ", "hit_count": 2}, {"keyword": "兼职", "hit_count": 1}]}
 
-
-
- 
