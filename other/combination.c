@@ -61,11 +61,14 @@ int count1_bits(unsigned int n)
 /**
  * 高效算法
  * */
-int next_n(u_long_int N)
+u_long_int  next_n(u_long_int N)
 {
     u_long_int x = N & (-N);
+    //printf("[%s] x = %llu\n", __func__, x);
     u_long_int t = N + x;
+    //printf("[%s] t = %llu\n", __func__, t);
     u_long_int ans = t | ((N ^ t) / x) >> 2;
+    //printf("[%s] ans = %llu\n", __func__, ans);
 
     return ans;
 }
@@ -140,7 +143,7 @@ void combination(char* set, int N, int m)
 
 void mcombination(char **mset, int N, int m)
 {
-    u_long_int C = (BIG1 << m ) - 1;
+    u_long_int C = (BIG1 << m ) - BIG1;
     //printf("%s %lld\n", __func__, C);
     //printf("%d \n", (( 1 << N) - (1 << (N - m))));
 
@@ -154,16 +157,18 @@ void mcombination(char **mset, int N, int m)
         printf("\n");
 
         C = next_n(C);
+        //printf("%s %lld\n", __func__, C);
     }
 }
 
 
 int main(int argc, char *argv[])
 {
-    //unsigned long long int t = 1ULL;
-    //t = 1ULL << 32;
+    //u_long_int t = 1ULL;
+    //t = 1ULL << 33;
     //printf("t = %llu \n", t);
-    //t = 1ULL << 32;
+
+    //t = 0ULL << 32;
     //printf("t = %llu \n", t);
 
     //printf("%ld\n", sizeof(t));
@@ -171,7 +176,11 @@ int main(int argc, char *argv[])
     //combination(set, 8, 5);
     //printf("sizeof(mset) = %ld\n", sizeof(mset) / sizeof(*mset));
 
-    mcombination(mset, 33, 7);
+    // 双色球 33 红球选 6 个
+    mcombination(mset, 33, 6);
+
+
+    //u_long_int ret = next_n(2113929216ULL);
 
     return 0;
 }
