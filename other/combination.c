@@ -121,7 +121,7 @@ void mprint(char **mset, u_long_int C)
         {
             //printf("%s i = %d\n", __func__, i);
             //printf("%d \t", i);
-            printf("%s \t", mset[i]);
+            printf("%s\t", mset[i]);
         }
 
         i++;
