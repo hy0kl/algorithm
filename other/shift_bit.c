@@ -32,9 +32,9 @@ int main(int argc, char *argv[])
 {
     int i;
 
-    for (i = 0; i < 32; i++)
+    for (i = 0; i < 64; i++)
     {
-        printf("1 << %d\t= %ld\n", i, (long int)(1L << i));
+        printf("1 << %d\t= %lu\n", i, (unsigned long int)(1UL << i));
     }
 
 
