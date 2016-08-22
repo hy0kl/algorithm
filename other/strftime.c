@@ -19,7 +19,6 @@
 #include <errno.h>
 #include <err.h>
 #include <getopt.h>
-#include <sys/types.h>
 #include <sys/time.h>
 #include <sys/queue.h>
 #include <sys/types.h>
@@ -28,20 +27,17 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
+#define BUFLEN 256
+
 int main(int argc, char *argv[])
 {
-    int i;
+    time_t t = time(NULL);   
+    char buf[BUFLEN];   
+    strftime(buf, BUFLEN, "%Y-%m-%d %H:%M:%S", localtime(&t)); //format date and time. 
+    printf("Date-Tims: %s\n", buf);
 
-    for (i = 0; i < 64; i++)
-    {
-        printf("1 << %d\t= %lu\n", i, (unsigned long int)(1UL << i));
-    }
-
-
-    printf("1 | 2  = %d\n", 1 | 2);
-    printf("1 | 2 | 4 = %d\n", 1 | 2 | 4);
     return 0;
 }
 
-/* vi:set ft=c ts=4 sw=4 et fdm=marker: */
+/* vim:set ft=c ts=4 sw=4 et fdm=marker: */
 

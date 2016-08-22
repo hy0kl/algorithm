@@ -107,3 +107,78 @@ Build-date Jun 26 2014 16:15:18
 }
 ```
 
+## 测试报告
+### 机器配置
+
+![mac](assets/mac.png)
+
+### 测试结果
+
+```
+$ webbench -c 500 -t 5 'http://127.0.0.1:8668/?format=json&word=sb'
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://127.0.0.1:8668/?format=json&word=sb
+500 clients, running 5 sec.
+
+Speed=198456 pages/min, 717637 bytes/sec.
+Requests: 16163 susceed, 375 failed.
+```
+
+```
+$ ab -c 100 -n 10000 'http://127.0.0.1:8668/?format=json&word=sb'
+This is ApacheBench, Version 2.3 <$Revision: 1663405 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:        eac
+Server Hostname:        127.0.0.1
+Server Port:            8668
+
+Document Path:          /?format=json&word=sb
+Document Length:        57 bytes
+
+Concurrency Level:      100
+Time taken for tests:   1.633 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      2220000 bytes
+HTML transferred:       570000 bytes
+Requests per second:    6123.55 [#/sec] (mean)
+Time per request:       16.330 [ms] (mean)
+Time per request:       0.163 [ms] (mean, across all concurrent requests)
+Transfer rate:          1327.57 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    8  38.0      5     549
+Processing:     2    8  38.7      5     549
+Waiting:        1    8  38.7      5     549
+Total:          5   16  54.1     10     554
+
+Percentage of the requests served within a certain time (ms)
+  50%     10
+  66%     11
+  75%     12
+  80%     13
+  90%     15
+  95%     17
+  98%     19
+  99%    553
+ 100%    554 (longest request)
+```
