@@ -76,6 +76,7 @@ function union($a, $b) {
     $k = 0;
 
     for ($t = 0; $t < $total; /***/) {
+        /** 其中长数组多出来的元素,直接追加 */
         if ($i >= $f_cnt && $k < $s_cnt) {
             for (/***/; $k < $s_cnt; $k++) {
                 $union_set[] = $s_loop[$k];
@@ -90,6 +91,7 @@ function union($a, $b) {
             break;
         }
 
+        /** 一次比较,将两个元素同时压入 */
         if ($f_loop[$i] < $s_loop[$k]) {
             $union_set[] = $f_loop[$i++];
             $union_set[] = $s_loop[$k++];
