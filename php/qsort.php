@@ -1,6 +1,6 @@
 <?php
 /**
- * @describe:
+ * @describe: php实现的快速排序
  * @author: Jerry Yang(hy0kle@gmail.com)
  * */
 function qsort($arr) {
