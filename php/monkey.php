@@ -34,7 +34,7 @@ function out_of_game($total, $cond)
 echo 'The monkey King is: ', out_of_game(10, 3), PHP_EOL;
 
 // 数学法
-// 编号从0开始,如果编号要从1开始,
+// 编号从0开始,如果编号要从1开始,结果要加1
 function josephus($n, $k) {
     $s = 0;
     for ($i = 2; $i <= $n; $i++) {
