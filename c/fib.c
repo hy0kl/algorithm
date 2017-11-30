@@ -19,7 +19,7 @@
  * f(3) = [(1, 1, 1), (1, 2), (2, 1)], 3
  * f(4) = [(1, 1, 1, 1), (1, 1, 2), (1, 2, 1), (2, 1, 1), (2, 2)] 5
  * f(5) = [(1, 1, 1, 1, 1), (1, 1, 1, 2), (1, 1, 2, 1), (1, 2, 1, 1), (2, 1, 1, 1), (1, 2, 2), (2, 1, 2), (2, 2, 1)] 8
- * 数学归纳法发现,其本质是个斐波那契数列
+ * 数学归纳法发现,其本质是个变种版的斐波那契数列
  * */
 
 #include <stdio.h>
@@ -32,12 +32,8 @@ fib_recur(int n)
 {
     assert(n >= 0);
 
-    if (0 == n) {
-        return 0;
-    }else if (1 == n) {
-        return 1;
-    } else if (2 == n) {
-        return 2;
+    if (n <= 2) {
+        return n;
     }
 
     return fib_recur(n - 1) + fib_recur(n - 2);
@@ -67,7 +63,14 @@ fib(int n)
 
 int main(int argc, char *argv[])
 {
-    int n = 7;
+    int n = 6;
+
+    if (argc > 1) {
+        int input = atoi(argv[1]);
+        if (input > 0) {
+            n = input;
+        }
+    }
 
     printf("Fibonacci-recursion(%d) = %d\n", n, fib_recur(n));
     printf("Fibonacci-iter(%d)      = %d\n", n, fib(n));
